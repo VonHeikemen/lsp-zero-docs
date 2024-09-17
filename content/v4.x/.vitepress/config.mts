@@ -42,6 +42,7 @@ function sidebar() {
         { text: 'Autocompletion', link: '/autocomplete' },
         { text: 'Frequent Questions', link: '/faq' },
         { text: 'Troubleshoot', link: '/guide/what-to-do-when-lsp-doesnt-start' },
+        { text: 'Versions', link: '/previous-version' },
       ]
     },
     {
