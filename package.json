@@ -1,0 +1,30 @@
+{
+  "scripts": {
+    "dev:blog": "vitepress dev --port 3000 ./content/blog/",
+    "build:blog": "vitepress build ./content/blog/",
+    "preview:blog": "vitepress preview ./content/blog/",
+
+    "dev:v4": "vitepress dev --port 3000 ./content/v4.x/",
+    "build:v4": "vitepress build ./content/v4.x/",
+    "preview:v4": "vitepress preview ./content/v4.x/",
+
+    "dev:v3": "vitepress dev --port 3000 ./content/v3.x/",
+    "build:v3": "vitepress build ./content/v3.x/",
+    "preview:v3": "vitepress preview ./content/v3.x/",
+
+    "dev:compat-07": "vitepress dev --port 3000 ./content/compat-07/",
+    "build:compat-07": "vitepress build ./content/compat-07/",
+    "preview:compat-07": "vitepress preview ./content/compat-07/",
+
+    "dev:v2": "vitepress dev --port 3000 ./content/v2.x/",
+    "build:v2": "vitepress build ./content/v2.x/",
+    "preview:v2": "vitepress preview ./content/v2.x/",
+
+    "dev:v1": "vitepress dev --port 3000 ./content/v1.x/",
+    "build:v1": "vitepress build ./content/v1.x/",
+    "preview:v1": "vitepress preview ./content/v1.x/"
+  },
+  "devDependencies": {
+    "vitepress": "1.0.0-rc.40"
+  }
+}
