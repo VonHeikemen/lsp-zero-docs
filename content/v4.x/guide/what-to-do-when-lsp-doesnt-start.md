@@ -155,7 +155,7 @@ This means `lspconfig` could not figure out what is the root of your project.
 
 lspconfig will look for some common configuration file in the current directory or the parent directories. If it can't find them the language server doesn't get attached to the file.
 
-How do you know which files lspconfig looks for? Ideally, you would know because you read the documentation. Each server looks for a particular set of files and you can find that information here: [server_configurations.md](https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md).
+How do you know which files lspconfig looks for? Ideally, you would know because you read the documentation. Each server looks for a particular set of files and you can find that information here: [configs.md](https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md).
 
 Sometimes the documentation in lspconfig just says `see source file` in the `root_dir` section. In this case what you can do is inspect the source code of lspconfig. You can use the command `:LspZeroViewConfigSource` with the name of a language server, this will open the configuration file for that server in a split window.
 

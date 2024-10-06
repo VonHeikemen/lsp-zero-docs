@@ -235,7 +235,7 @@ lsp_zero.extend_lspconfig({
 
 ## Use nvim-lspconfig
 
-Remember that you need to install a language server so nvim-lspconfig can work properly. You can find a list of language servers in [nvim-lspconfig's documentation](https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md).
+Remember that you need to install a language server so nvim-lspconfig can work properly. You can find a list of language servers in [nvim-lspconfig's documentation](https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md).
 
 Once you have a language server installed you add its setup function in your Neovim config. Follow this syntax.
 
