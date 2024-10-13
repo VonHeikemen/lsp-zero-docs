@@ -5,7 +5,7 @@ next: false
 
 # Opinionated config
 
-Here I will show you a fully working example configuration that you can use as your `init.lua`. This one will have a fair amount code that goes beyond the essential. Here I will add more "completion sources" to nvim-cmp. More keybindings to the autocompletion plugin (nvim-cmp). And more snippets.
+Here I will show you a fully working example configuration that you can use as your `init.lua`. This one will have a fair amount code that goes beyond the essential.
 
 ::: details Expand: what's an init.lua?
 
@@ -24,6 +24,8 @@ Note that Neovim will not create that folder (or the init.lua file) for you. You
 :::
 
 ```lua
+vim.opt.signcolumn = 'yes'
+
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
 
 -- Auto-install lazy.nvim if not present
@@ -55,29 +57,29 @@ require('lazy').setup({
   {'rafamadriz/friendly-snippets'},
 })
 
-local lsp_zero = require('lsp-zero')
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(event)
+    local opts = {buffer = event.buf}
 
-local lsp_attach = function(client, bufnr)
-  local opts = {buffer = bufnr}
-
-  vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
-  vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
-  vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
-  vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
-  vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
-  vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
-  vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
-  vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
-  vim.keymap.set({'n', 'x'}, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
-  vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
-end
-
-lsp_zero.extend_lspconfig({
-  sign_text = true,
-  lsp_attach = lsp_attach,
-  float_border = 'rounded',
-  capabilities = require('cmp_nvim_lsp').default_capabilities()
+    vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
+    vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
+    vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
+    vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
+    vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
+    vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
+    vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
+    vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
+    vim.keymap.set({'n', 'x'}, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
+    vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
+  end,
 })
+
+local lspconfig_defaults = require('lspconfig').util.default_config
+lspconfig_defaults.capabilities = vim.tbl_deep_extend(
+  'force',
+  lspconfig_defaults.capabilities,
+  require('cmp_nvim_lsp').default_capabilities()
+)
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
@@ -87,6 +89,8 @@ require('mason-lspconfig').setup({
     end,
   }
 })
+
+local lsp_zero = require('lsp-zero')
 
 local cmp = require('cmp')
 local cmp_action = lsp_zero.cmp_action()

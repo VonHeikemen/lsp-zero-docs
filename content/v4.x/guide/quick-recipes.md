@@ -5,24 +5,6 @@ next: false
 
 # Quick Recipes
 
-## Setup with nvim-navic
-
-Here what you need to do is call [nvim-navic](https://github.com/SmiteshP/nvim-navic)'s `.attach` function inside the `lsp_attach` callback. 
-
-```lua{4-6}
-local lsp_zero = require('lsp-zero')
-
-local lsp_attach = function(client, bufnr)
-  if client.server_capabilities.documentSymbolProvider then
-    require('nvim-navic').attach(client, bufnr)
-  end
-end
-
-lsp_zero.extend_lspconfig({
-  lsp_attach = lsp_attach,
-})
-```
-
 ## Enable folds with nvim-ufo
 
 Configure [nvim-ufo](https://github.com/kevinhwang91/nvim-ufo) to use Neovim's LSP client as a provider.
@@ -52,62 +34,56 @@ local lsp_capabilities = vim.tbl_deep_extend(
         dynamicRegistration = false,
         lineFoldingOnly = true
       },
+    },
   }
 )
 
-lsp_zero.extend_lspconfig({
-  capabilities = lsp_capabilities,
-})
+local lspconfig_defaults = require('lspconfig').util.default_config
+lspconfig_defaults.capabilities = vim.tbl_deep_extend(
+  'force',
+  lspconfig_defaults.capabilities,
+  lsp_capabilities
+)
 ```
 
 ## Setup with rustaceanvim
 
 Here you just let [rustaceanvim](https://github.com/mrcjkb/rustaceanvim) configure [rust-analyzer](https://github.com/rust-analyzer/rust-analyzer).  
 
-You can share the "capabilities" option with rustaceanvim.
+You can add `cmp_nvim_lsp` "capabilities" to rustaceanvim.
 
-```lua{8-10}
-local lsp_zero = require('lsp-zero')
-
-lsp_zero.extend_lspconfig({
-  capabilities = require('cmp_nvim_lsp').default_capabilities(),
-})
-
+```lua{3}
 vim.g.rustaceanvim = {
   server = {
-    capabilities = lsp_zero.get_capabilities()
+    capabilities = require('cmp_nvim_lsp').default_capabilities(),
   },
 }
 ```
 
 And if you use `mason-lspconfig` make sure you ignore `rust_analyzer` from the automatic setup.
 
-```lua{7}
+```lua{1,9}
+local noop = function() end
+
 require('mason').setup({})
 require('mason-lspconfig').setup({
   handlers = {
     function(server_name)
       require('lspconfig')[server_name].setup({})
     end,
-    rust_analyzer = lsp_zero.noop,
+    rust_analyzer = noop,
   }
 })
 ```
 
 ## Setup with flutter-tools
 
-With [flutter-tools](https://github.com/akinsho/flutter-tools.nvim) the only thing that make sense to do is share the "capabilities" option. So, let flutter-tools initialize the language server, and have lsp-zero just configure the capabilities option.
+With [flutter-tools](https://github.com/akinsho/flutter-tools.nvim) the only thing that make sense to do is add `cmp_nvim_lsp` capabilities.
 
-```lua{8-10}
-local lsp_zero = require('lsp-zero')
-
-lsp_zero.extend_lspconfig({
-  capabilities = require('cmp_nvim_lsp').default_capabilities(),
-})
-
+```lua{3}
 require('flutter-tools').setup({
   lsp = {
-    capabilities = lsp_zero.get_capabilities()
+    capabilities = require('cmp_nvim_lsp').default_capabilities()
   }
 })
 ```
@@ -118,18 +94,12 @@ The following is based on the [example configuration](https://github.com/scalame
 
 If I understand correctly, `nvim-metals` is the one that needs to configure the [metals lsp](https://scalameta.org/metals/). The only thing that you need to do share is the "capabilities" option with the `metals` config.
 
-```lua{10-11}
-local lsp_zero = require('lsp-zero')
-
-lsp_zero.extend_lspconfig({
-  capabilities = require('cmp_nvim_lsp').default_capabilities(),
-})
-
+```lua{5}
 ---
 -- Create the configuration for metals
 ---
 local metals_config = require('metals').bare_config()
-metals_config.capabilities = lsp_zero.get_capabilities()
+metals_config.capabilities = require('cmp_nvim_lsp').default_capabilities()
 
 ---
 -- Autocmd that will actually be in charging of starting metals
@@ -146,22 +116,16 @@ vim.api.nvim_create_autocmd('FileType', {
 
 ## Setup with haskell-tools
 
-The only option that makes sense to share between [haskell-tools](https://github.com/mrcjkb/haskell-tools.nvim) and lsp-zero is the "capabilities" option. So, let haskell-tools initialize the language server, and have lsp-zero just configure the capabilities option. Note these instructions are for haskell-tools version 2 (from the branch 2.x.x).
+Let [haskell-tools](https://github.com/mrcjkb/haskell-tools.nvim) initialize the language server, and just configure the capabilities option. Note these instructions are for haskell-tools version 2 (from the branch 2.x.x).
 
-```lua{12-14}
-local lsp_zero = require('lsp-zero')
-
-lsp_zero.extend_lspconfig({
-  capabilities = require('cmp_nvim_lsp').default_capabilities(),
-})
-
+```lua{7}
 ---
 -- Setup haskell LSP
 ---
 
 vim.g.haskell_tools = {
   hls = {
-    capabilities = lsp_zero.get_capabilities()
+    capabilities = require('cmp_nvim_lsp').default_capabilities(),
   }
 }
 

@@ -21,8 +21,7 @@ We can create a file called `.luarc.json` file in Neovim's config folder and add
   "diagnostics.globals": ["vim"],
   "workspace.checkThirdParty": false,
   "workspace.library": [
-    "$VIMRUNTIME",
-    "${3rd}/luv/library"
+    "$VIMRUNTIME"
   ]
 }
 ```

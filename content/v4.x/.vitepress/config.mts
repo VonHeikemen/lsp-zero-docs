@@ -69,7 +69,6 @@ function sidebar() {
         { text: 'Integrate with mason.nvim', link: '/guide/integrate-with-mason-nvim' },
         { text: 'Enable folds with nvim-ufo', link: '/guide/quick-recipes#enable-folds-with-nvim-ufo' },
         { text: 'Setup copilot.lua + nvim-cmp', link: '/guide/setup-copilot-lua-plus-nvim-cmp' },
-        { text: 'Setup with nvim-jdtls', link: '/guide/setup-with-nvim-jdtls' },
         { text: 'Setup with nvim-navic', link: '/guide/quick-recipes#setup-with-nvim-navic' },
         { text: 'Setup with rustaceanvim', link: '/guide/quick-recipes#setup-with-rustaceanvim' },
         { text: 'Setup with flutter-tools', link: '/guide/quick-recipes#setup-with-flutter-tools' },
@@ -95,6 +94,7 @@ function sidebar() {
         { text: 'You might not need lsp-zero', link: 'https://lsp-zero.netlify.app/blog/you-might-not-need-lsp-zero.html' },
         { text: 'ThePrimeagen 0 to LSP', link: 'https://lsp-zero.netlify.app/blog/theprimeagens-config-from-2022.html' },
         { text: 'Configure volar 2.0', link: 'https://lsp-zero.netlify.app/blog/configure-volar-v2.html' },
+        { text: 'Setup with nvim-jdtls', link: 'https://lsp-zero.netlify.app/blog/setup-with-nvim-jdtls' },
       ]
     }
   ];

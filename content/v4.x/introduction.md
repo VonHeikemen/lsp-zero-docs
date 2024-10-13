@@ -1,11 +1,5 @@
 # Introduction
 
-::: info 
-
-You are reading the documentation for lsp-zero v4.x
-
-:::
-
 ## What is lsp-zero?
 
 Collection of functions that will help you use Neovim's LSP client. The aim is to provide abstractions on top of Neovim's LSP client that are easy to use.
@@ -68,7 +62,7 @@ lsp_zero.new_client({
   cmd = {'lua-language-server'},
   filetypes = {'lua'},
   on_init = function(client)
-    lsp_zero.nvim_lua_settings(client)
+    lsp_zero.nvim_lua_settings(client, {})
   end,
   root_dir = function(bufnr)
     -- You need Neovim v0.10 to use vim.fs.root
@@ -81,15 +75,10 @@ lsp_zero.new_client({
 
 :::
 
-### What is known for
-
-Most people use lsp-zero to help them configure [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig), [nvim-cmp](https://github.com/hrsh7th/nvim-cmp) and [cmp-nvim-lsp](https://github.com/hrsh7th/cmp-nvim-lsp). If you opt-in, you can have lsp-zero do some of the configuration steps you don't want to deal with.
-
-Of course you could also setup everything yourself and ignore lsp-zero. That's always an option worth considering.
 
 ## How to get started?
 
-If you are new to neovim and you don't have a configuration file (`init.lua`) follow this [step by step tutorial](/tutorial).
+If you are new to neovim and you don't have a configuration file (`init.lua`) follow this [step by step tutorial](./tutorial).
 
-If you know how to configure neovim go to the [Getting started section](/getting-started).
+If you know how to configure neovim go to the [Getting started section](./getting-started).
 

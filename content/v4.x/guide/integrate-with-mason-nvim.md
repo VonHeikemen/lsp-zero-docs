@@ -64,11 +64,13 @@ Here we use the module `lspconfig` to setup the language server and we add our c
 
 ## Exclude a language server from the automatic setup
 
-If we want to ignore a language server we can use the function [lsp-zero.noop()](../reference/lua-api#noop) as a handler. This will make `mason-lspconfig` ignore the setup for the language server.
+If we want to ignore a language server we can use an empty function as a handler. This will make `mason-lspconfig` ignore the setup for the language server.
 
-```lua{14}
+```lua{4,15}
 --- in your own config you should replace 
 --- `example_server` with the name of a language server
+
+local noop = function() end
 
 require('mason-lspconfig').setup({
   handlers = {
@@ -79,13 +81,12 @@ require('mason-lspconfig').setup({
     end,
 
     -- this is the "custom handler" for `example_server`
-    -- noop is an empty function that doesn't do anything
-    example_server = lsp_zero.noop,
+    example_server = noop,
   },
 })
 ```
 
-So `example_server = lsp_zero.noop` is the same thing as this.
+So `example_server = noop` is the same thing as this.
 
 ```lua
 example_server = function() end

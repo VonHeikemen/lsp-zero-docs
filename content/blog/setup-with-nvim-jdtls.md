@@ -11,7 +11,7 @@ Here we will focus on getting a working configuration using [nvim-jdtls](https:/
 
 * A working environment with Java 17 or greater
 * Python 3.9 or greater
-* A working configuration for Neovim (If you don't have one, follow this [step by step tutorial](../tutorial))
+* A working configuration for Neovim
 
 The code on this guide assumes you will be using [mason.nvim](https://github.com/williamboman/mason.nvim) to install the following packages:
 
@@ -41,7 +41,7 @@ You can still follow this guide if you are using another operating system.
 
 Setup `mason.nvim` like you usually do. But don't configure `jdtls` with lspconfig, we want `nvim-jdtls` to handle that language server.
 
-```lua{15}
+```lua{1,15}
 local noop = function() end
 
 require('mason').setup({})

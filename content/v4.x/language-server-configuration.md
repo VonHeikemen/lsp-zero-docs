@@ -24,44 +24,6 @@ Here's the description of the keymaps recommended in the getting started page:
 
 * `<F4>`: Selects a code action available at the current cursor position. See [:help vim.lsp.buf.code_action()](https://neovim.io/doc/user/lsp.html#vim.lsp.buf.code_action()).
 
-These keymaps can also be created using the function [lsp-zero.default_keymaps()](./reference/lua-api#default-keymaps-opts).
-
-```lua{4}
-local lsp_zero = require('lsp-zero')
-
-local lsp_attach = function(client, bufnr)
-  lsp_zero.default_keymaps({buffer = bufnr})
-end
-
-lsp_zero.extend_lspconfig({
-  lsp_attach = lsp_attach,
-})
-```
-
-By default lsp-zero will not create a keymap if it's "taken". This means if you already use one of these in your config, or some other plugins uses it ([which-key](https://github.com/folke/which-key.nvim) might be one), then lsp-zero's bindings will not work.
-
-You can force lsp-zero's bindings by adding `preserve_mappings = false` to [lsp-zero.default_keymaps()](./reference/lua-api#default-keymaps-opts).
-
-```lua{4}
-local lsp_attach = function(client, bufnr)
-  lsp_zero.default_keymaps({
-    buffer = bufnr,
-    preserve_mappings = false
-  })
-end
-```
-
-If you want lsp-zero to skip only a few keys you can add the `exclude` property to the [lsp-zero.default_keymaps()](./reference/lua-api#default-keymaps-opts) call. Say you want to keep the default behavior of `K` and `gr`, you would do this.
-
-```lua{4}
-local lsp_attach = function(client, bufnr)
-  lsp_zero.default_keymaps({
-    buffer = bufnr,
-    exclude = {'gr', 'K'},
-  })
-end
-```
-
 ## Install new language servers
 
 ### Manual install
@@ -82,19 +44,7 @@ The name of the language server you want to install must be [on this list](https
 
 :::
 
-```lua{17}
-local lsp_zero = require('lsp-zero')
-
-local lsp_attach = function(client, bufnr)
-  -- this is where you enable features that only work
-  -- if there is a language server active in the file
-end
-
-lsp_zero.extend_lspconfig({
-  sign_text = true,
-  lsp_attach = lsp_attach,
-})
-
+```lua{5}
 require('mason').setup({})
 require('mason-lspconfig').setup({
   -- Replace the language servers listed here
@@ -112,21 +62,9 @@ We add a "default handler" to the `handlers` option so we can get automatic setu
 
 ## Configure language servers
 
-To pass arguments to a language server you can use the lspconfig directly.
+To pass arguments to a language server use the lua module `lspconfig`.
 
-```lua{13-18}
-local lsp_zero = require('lsp-zero')
-
-local lsp_attach = function(client, bufnr)
-  -- this is where you enable features that only work
-  -- if there is a language server active in the file
-end
-
-lsp_zero.extend_lspconfig({
-  sign_text = true,
-  lsp_attach = lsp_attach,
-})
-
+```lua
 require('lspconfig').biome.setup({
   single_file_support = false,
   on_attach = function(client, bufnr)
@@ -163,21 +101,22 @@ Notice in `handlers` there is a new property with the name of the language serve
 
 ### Disable semantic highlights
 
-Neovim v0.9 allows a language server to apply new highlights, this is known as semantic tokens. This new feature is enabled by default. To disable it we need to modify the `server_capabilities` property of the language server, more specifically we need to "delete" the `semanticTokensProvider` property.
+Since Neovim v0.9 a language server can apply new highlights to your code, this is known as semantic tokens. This new feature is enabled by default. To disable it we need to modify the `server_capabilities` property of the language server, more specifically we need to "delete" the `semanticTokensProvider` property.
 
 We can disable this new feature in every server whenever they attach to a buffer.
 
-```lua{5}
-local lsp_zero = require('lsp-zero')
+```lua
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(event)
+    local id = vim.tbl_get(event, 'data', 'client_id')
+    local client = id and vim.lsp.get_client_by_id(id)
+    if client == nil then
+      return
+    end
 
-local lsp_attach = function(client, bufnr)
-  -- Disable semantic highlights
-  client.server_capabilities.semanticTokensProvider = nil
-end
-
-lsp_zero.extend_lspconfig({
-  sign_text = true,
-  lsp_attach = lsp_attach,
+    -- Disable semantic highlights
+    client.server_capabilities.semanticTokensProvider = nil
+  end
 })
 ```
 
@@ -206,29 +145,13 @@ require('lspconfig').lua_ls.setup({
 
 ## Custom servers
 
-There are two ways you can use a server that is not supported by `lspconfig`:
-
-### Add the configuration to lspconfig (recommended)
-
 You can add the configuration to the module `lspconfig.configs` then you can call the `.setup()` function.
+
+But before doing anything, make sure the server you want to add is **not** supported by `lspconfig`. Read the [list of supported language servers](https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#lsp-configs).
 
 You'll need to provide the command that starts the language server, a list of filetypes where you want to attach the language server, and a function that detects the "root directory" of the project.
 
-Note: before doing anything, make sure the server you want to add is **not** supported by `lspconfig`. Read the [list of supported language servers](https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md#lsp-configs).
-
-```lua{16-22}
-local lsp_zero = require('lsp-zero')
-
-local lsp_attach = function(client, bufnr)
-  -- this is where you enable features that only work
-  -- if there is a language server active in the file
-end
-
-lsp_zero.extend_lspconfig({
-  sign_text = true,
-  lsp_attach = lsp_attach,
-})
-
+```lua
 local lsp_configurations = require('lspconfig.configs')
 
 if not lsp_configurations.name_of_my_lsp then
@@ -250,23 +173,6 @@ require('lspconfig').name_of_my_lsp.setup({})
 
 :::
 
-### Use the function `.new_client()`
-
-If you don't need a "robust" solution you can use the function [lsp-zero.new_client()](./reference/lua-api#new-client-opts). This function is just a thin wrapper that calls [vim.lsp.start()](https://neovim.io/doc/user/lsp.html#vim.lsp.start()) in a `FileType` autocommand.
-
-```lua
-local lsp_zero = require('lsp-zero')
-
-lsp_zero.new_client({
-  name = 'my-new-lsp',
-  cmd = {'command-that-start-the-lsp'},
-  filetypes = {'my-filetype'},
-  root_dir = function()
-    return lsp_zero.dir.find_first({'some-config-file'}) 
-  end
-})
-```
-
 ## Enable Format on save
 
 You have two ways to enable format on save.
@@ -280,8 +186,8 @@ If you want to control exactly what language server is used to format a file cal
 ```lua
 local lsp_zero = require('lsp-zero')
 
--- don't add this function in the `lsp_attach` callback.
--- `format_on_save` should run only once, before the language servers are active.
+-- don't add this function in the `LspAttach` event.
+-- `format_on_save` should run only once.
 lsp_zero.format_on_save({
   format_opts = {
     async = false,
@@ -298,16 +204,20 @@ lsp_zero.format_on_save({
 
 If you only ever have **one** language server attached in each file and you are happy with all of them, you can call the function [lsp-zero.buffer_autoformat()](./reference/lua-api#buffer-autoformat-client-bufnr-opts) when a language server is active in the current buffer.
 
-```lua{4}
-local lsp_zero = require('lsp-zero')
+```lua{11}
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(event)
+    local id = vim.tbl_get(event, 'data', 'client_id')
+    local client = id and vim.lsp.get_client_by_id(id)
+    if client == nil then
+      return
+    end
 
-local lsp_attach = function(client, bufnr)
-  lsp_zero.buffer_autoformat()
-end
-
-lsp_zero.extend_lspconfig({
-  sign_text = true,
-  lsp_attach = lsp_attach,
+    -- make sure there is at least one client with formatting capabilities
+    if client.supports_method('textDocument/formatting') then
+      require('lsp-zero').buffer_autoformat()
+    end
+  end
 })
 ```
 
@@ -315,20 +225,21 @@ If you have multiple servers active in one file it'll try to format using all of
 
 It's worth mentioning [lsp-zero.buffer_autoformat()](./reference/lua-api#buffer-autoformat-client-bufnr-opts) is a blocking (synchronous) function. If you want something that behaves like [lsp-zero.buffer_autoformat()](./reference/lua-api#buffer-autoformat-client-bufnr-opts) but is asynchronous you'll have to use [lsp-format.nvim](https://github.com/lukas-reineke/lsp-format.nvim).
 
-```lua{6-8}
-local lsp_zero = require('lsp-zero')
+```lua
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(event)
+    local id = vim.tbl_get(event, 'data', 'client_id')
+    local client = id and vim.lsp.get_client_by_id(id)
+    if client == nil then
+      return
+    end
 
-local lsp_attach = function(client, bufnr)
-  -- make sure you use clients with formatting capabilities
-  -- otherwise you'll get a warning message
-  if client.supports_method('textDocument/formatting') then
-    require('lsp-format').on_attach(client)
+    -- make sure you use clients with formatting capabilities
+    -- otherwise you'll get a warning message
+    if client.supports_method('textDocument/formatting') then
+      require('lsp-format').on_attach(client)
+    end
   end
-end
-
-lsp_zero.extend_lspconfig({
-  sign_text = true,
-  lsp_attach = lsp_attach,
 })
 ```
 
@@ -338,48 +249,40 @@ lsp_zero.extend_lspconfig({
 
 You'll want to bind the function [vim.lsp.buf.format()](https://neovim.io/doc/user/lsp.html#vim.lsp.buf.format()) to a keymap. The next example will create a keymap `gq` to format the current buffer using **all** active servers with formatting capabilities.
 
-```lua{6-8}
-local lsp_zero = require('lsp-zero')
+```lua{11-13}
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(event)
+    local opts = {buffer = event.buf}
 
-local lsp_attach = function(client, bufnr)
-  local opts = {buffer = bufnr}
-
-  vim.keymap.set({'n', 'x'}, 'gq', function()
-    vim.lsp.buf.format({async = false, timeout_ms = 10000})
-  end, opts)
-end
-
-lsp_zero.extend_lspconfig({
-  sign_text = true,
-  lsp_attach = lsp_attach,
+    vim.keymap.set({'n', 'x'}, 'gq', function()
+      vim.lsp.buf.format({async = false, timeout_ms = 10000})
+    end, opts)
+  end
 })
 ```
 
 If you want to allow only a list of servers, use the `filter` option. You can create a function that compares the current server with a list of allowed servers.
 
-```lua{3-5,14}
-local lsp_zero = require('lsp-zero')
-
+```lua{1-3,13}
 local allow_format = function(servers)
   return function(client) return vim.tbl_contains(servers, client.name) end
 end
 
-local lsp_attach = function(client, bufnr)
-  local opts = {buffer = bufnr}
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(event)
+    local opts = {buffer = bufnr}
 
-  vim.keymap.set({'n', 'x'}, 'gq', function()
-    vim.lsp.buf.format({
-      async = false,
-      timeout_ms = 10000,
-      filter = allow_format({'lua_ls', 'rust_analyzer'})
-    })
-  end, opts)
-end
-
-lsp_zero.extend_lspconfig({
-  sign_text = true,
-  lsp_attach = lsp_attach,
+    vim.keymap.set({'n', 'x'}, 'gq', function()
+      vim.lsp.buf.format({
+        async = false,
+        timeout_ms = 10000,
+        filter = allow_format({'lua_ls', 'rust_analyzer'})
+      })
+    end, opts)
+  end
 })
+
+
 ```
 
 ### Ensure only one language server per filetype
@@ -391,18 +294,8 @@ Here is an example using `gq` as the keymap.
 ```lua
 local lsp_zero = require('lsp-zero')
 
-local lsp_attach = function(client, bufnr)
-  -- this is where you enable features that only work
-  -- if there is a language server active in the file
-end
-
-lsp_zero.extend_lspconfig({
-  sign_text = true,
-  lsp_attach = lsp_attach,
-})
-
--- don't add this function in the `lsp_attach` callback.
--- `format_mapping` should run only once, before the language servers are active.
+-- don't add this function in the `LspAttach` autocommand.
+-- `format_mapping` should run only once.
 lsp_zero.format_mapping('gq', {
   format_opts = {
     async = false,
@@ -438,102 +331,28 @@ If you are going that route and you are wondering which one to choose, use `conf
 
 ## Diagnostics
 
-The function [lsp-zero.extend_lspconfig()](./reference/lua-api#extend-lspconfig-opts) has the option `sign_text`, with it you can enable or disable the diagnostic signs.
+You can use the module [vim.diagnostic](https://neovim.io/doc/user/diagnostic.html) to enable or disable diagnostic signs.
 
-The value `true` will enable diagnostic signs in the `vim.diagnostic` module. It will also change the value of the vim option `signcolumn` from "auto" to "yes" to avoid a layout shift when signs appear on screen.
+This is how you disable the diagnostic signs.
 
 ```lua
-lsp_zero.extend_lspconfig({
-  sign_text = true,
+vim.diagnostic.config({
+  signs = false,
 })
 ```
 
-If `sign_text` is `false` it will disable diagnostic signs in the `vim.diagnostic` module. The vim option `signcolumn` will not be modified.
+If you want to change the text content of the signs, use a table with the property `text` and assign a string to each type of sign. Something like this.
 
 ```lua
-lsp_zero.extend_lspconfig({
-  sign_text = false,
-})
-```
-
-`sign_text` can also be a table, this will allow you to change the text of diagnostic signs.
-
-```lua
-lsp_zero.extend_lspconfig({
-  sign_text = {
-    error = '✘',
-    warn = '▲',
-    hint = '⚑',
-    info = '»',
+vim.diagnostic.config({
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = '✘',
+      [vim.diagnostic.severity.WARN] = '▲',
+      [vim.diagnostic.severity.HINT] = '⚑',
+      [vim.diagnostic.severity.INFO] = '»',
+    },
   },
 })
-```
-
-If you don't provide `sign_text` to `extend_lspconfig()` you get the default behavior your Neovim version has for diagnostic signs.
-
-## How does it work?
-
-Language servers are configured and initialized using [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig/).
-
-lsp-zero first adds data to an option called `capabilities` in lspconfig's defaults. This new data comes from [cmp-nvim-lsp](https://github.com/hrsh7th/cmp-nvim-lsp). It tells the language server what features [nvim-cmp](https://github.com/hrsh7th/nvim-cmp) adds to the editor.
-
-Then it creates an autocommand on the event `LspAttach`. This autocommand will be triggered every time a language server is attached to a buffer. This is where all keybindings and commands are created.
-
-So this example configuration
-
-```lua
-local lsp_zero = require('lsp-zero')
-
-local lsp_attach = function(client, bufnr)
-  lsp_zero.default_keymaps({buffer = bufnr})
-end
-
-lsp_zero.extend_lspconfig({
-  sign_text = true,
-  lsp_attach = lsp_attach,
-  capabilities = require('cmp_nvim_lsp').default_capabilities()
-})
-
-require('lspconfig').gleam.setup({})
-require('lspconfig').rust_analyzer.setup({})
-```
-
-Is the same as this:
-
-```lua
-vim.opt.signcolumn = 'yes'
-
-vim.diagnostic.config({
-  signs = true
-})
-
-local lspconfig = require('lspconfig')
-
-lspconfig.util.default_config.capabilities = vim.tbl_deep_extend(
-  'force',
-  lspconfig.util.default_config.capabilities,
-  require('cmp_nvim_lsp').default_capabilities()
-)
-
-vim.api.nvim_create_autocmd('LspAttach', {
-  desc = 'LSP actions',
-  callback = function(event)
-    local opts = {buffer = event.buf}
-
-    vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
-    vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
-    vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
-    vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
-    vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
-    vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
-    vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
-    vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
-    vim.keymap.set({'n', 'x'}, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
-    vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
-  end,
-})
-
-lspconfig.gleam.setup({})
-lspconfig.rust_analyzer.setup({})
 ```
 

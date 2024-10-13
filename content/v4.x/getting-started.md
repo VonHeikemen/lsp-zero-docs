@@ -6,6 +6,8 @@ next:
 
 # Getting started
 
+In this section you will learn how to add a very basic "LSP setup" to your existing Neovim config. If you want to learn how to setup everything from scratch, go to the [tutorial for beginners](./tutorial).
+
 ## Requirements
 
 Before doing anything, make sure you...
@@ -18,14 +20,13 @@ Before doing anything, make sure you...
 
 ## Installing
 
-Here I will show you how to use these plugins:
+Use your favorite method to install these plugins.
 
   * [VonHeikemen/lsp-zero.nvim](https://github.com/VonHeikemen/lsp-zero.nvim/tree/v4.x)
   * [neovim/nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)
   * [hrsh7th/nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
   * [hrsh7th/cmp-nvim-lsp](https://github.com/hrsh7th/cmp-nvim-lsp)
 
-Use your favorite method to install them.
 
 ::: details Expand: lazy.nvim
 
@@ -113,50 +114,31 @@ EOF
 
 ::: details Expand: rocks.nvim
 
+Is worth mention I don't manage the package that is hosted on luarocks. I think the developers of rocks.nvim have an automated process that does all the things. Also, I don't manage the versions of lsp-zero with git tags, I do it with branches. This means you'll have to install the "development" version.
+
 ```
 Rocks install lsp-zero.nvim scm
 ```
 
-Is worth mention I don't manage the package that is hosted on luarocks. I think the developers of rocks.nvim have an automated process that does all the things. Also, I don't manage the versions of lsp-zero with git tags, I do it with branches. This means you'll have to install the "development" version.
+Install nvim-lspconfig.
 
-**IMPORTANT:** If the autocompletion doesn't work you can try installing the dependencies manually. For that you have two options:
+```
+Rocks install nvim-lspconfig
+```
 
-* Option 1: download from luarocks
+Install nvim-cmp.
 
-  Install nvim-cmp.
+```
+Rocks install nvim-cmp
+```
 
-  ```
-  Rocks install nvim-cmp
-  ```
+Install the LSP completion source.
 
-  Install the LSP completion source.
-
-  ```
-  Rocks install cmp-nvim-lsp
-  ```
-
-* Option 2: download from git
-
-  To allow rocks.nvim to download plugins from github you need to install this extension.
-
-  ```
-  Rocks install rocks-git.nvim
-  ```
-
-  Install nvim-cmp.
-
-  ```
-  Rocks install hrsh7th/nvim-cmp rev=main
-  ```
-
-  Install the LSP completion source.
-
-  ```
-  Rocks install hrsh7th/cmp-nvim-lsp rev=main
-  ```
+```
+Rocks install cmp-nvim-lsp
+```
 
 :::
-
 
 ::: details Expand: Git clone
 
@@ -167,7 +149,7 @@ To install a plugin without a plugin manager you just have to download them in t
   The exact path depends on your operating system and environment variables. To get a valid location you can execute this command in your terminal.
 
   ```sh
-  nvim --headless -c "echo stdpath('config') . '/pack/github/start/'" -c "echo ''" -c "quit"
+  nvim --headless -c "echo stdpath('config') . '/pack/vendor/start/'" -c "echo ''" -c "quit"
   ```
 
   Create that folder and navigate to it. Use whatever method you know best.
@@ -202,34 +184,42 @@ To install a plugin without a plugin manager you just have to download them in t
 
 ## Extend nvim-lspconfig
 
-Now that you installed all the lua plugins is time to add some code in your Neovim configuration. Let's start with lsp-zero.
+Now that you installed all the lua plugins is time to add some code in your Neovim configuration.
 
-lsp-zero can handle some configurations steps for you: Set additional `capabilities` in nvim-lspconfig, creating an autocommand on the `LspAttach` event and reserve space in the gutter for diagnostic signs.
+The first step is to prepare your custom keymaps and add extra settings from `cmp_nvim_lsp` to `nvim-lspconfig` defaults.
 
 ```lua
-local lsp_zero = require('lsp-zero')
+-- Reserve a space in the gutter
+-- This will avoid an annoying layout shift in the screen
+vim.opt.signcolumn = 'yes'
 
--- lsp_attach is where you enable features that only work
+-- Add cmp_nvim_lsp capabilities settings to lspconfig
+-- This should be executed before you configure any language server
+local lspconfig_defaults = require('lspconfig').util.default_config
+lspconfig_defaults.capabilities = vim.tbl_deep_extend(
+  'force',
+  lspconfig_defaults.capabilities,
+  require('cmp_nvim_lsp').default_capabilities()
+)
+
+-- This is where you enable features that only work
 -- if there is a language server active in the file
-local lsp_attach = function(client, bufnr)
-  local opts = {buffer = bufnr}
+vim.api.nvim_create_autocmd('LspAttach', {
+  desc = 'LSP actions',
+  callback = function(event)
+    local opts = {buffer = event.buf}
 
-  vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
-  vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
-  vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
-  vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
-  vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
-  vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
-  vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
-  vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
-  vim.keymap.set({'n', 'x'}, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
-  vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
-end
-
-lsp_zero.extend_lspconfig({
-  sign_text = true,
-  lsp_attach = lsp_attach,
-  capabilities = require('cmp_nvim_lsp').default_capabilities(),
+    vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
+    vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
+    vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
+    vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
+    vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
+    vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
+    vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
+    vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
+    vim.keymap.set({'n', 'x'}, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
+    vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
+  end,
 })
 ```
 
@@ -241,8 +231,6 @@ Once you have a language server installed you add its setup function in your Neo
 
 ```lua
 require('lspconfig').example_server.setup({})
-
--- You would add this setup function after calling lsp_zero.extend_lspconfig()
 ```
 
 Where `example_server` is the name of the language server you installed in your system. For example, this is the setup for function for the lua language server.
@@ -267,8 +255,7 @@ To get some basic support for Neovim, create a file called `.luarc.json` in your
   "diagnostics.globals": ["vim"],
   "workspace.checkThirdParty": false,
   "workspace.library": [
-    "$VIMRUNTIME",
-    "${3rd}/luv/library"
+    "$VIMRUNTIME"
   ]
 }
 ```
@@ -277,7 +264,7 @@ To get some basic support for Neovim, create a file called `.luarc.json` in your
 
 ### Alternative install method
 
-There is a way to install **some** language servers from inside Neovim. This requires two extra plugins and learning how to use them together with `lspconfig`. The details are in this guide: [Integrate with mason.nvim](./guide/integrate-with-mason-nvim)
+There is a way to install **some** language servers from inside Neovim. This requires two extra plugins and learning how to use them together with `lspconfig`. The details are in this guide: [Integrate with mason.nvim](./guide/integrate-with-mason-nvim).
 
 ## Minimal autocompletion config
 
@@ -321,83 +308,20 @@ Lua code from previous sections put together.
 ::: details Expand: code snippet
 
 ```lua
----
--- LSP configuration
----
-local lsp_zero = require('lsp-zero')
-
-local lsp_attach = function(client, bufnr)
-  local opts = {buffer = bufnr}
-
-  vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
-  vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
-  vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
-  vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
-  vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
-  vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
-  vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
-  vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
-  vim.keymap.set({'n', 'x'}, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
-  vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
-end
-
-lsp_zero.extend_lspconfig({
-  sign_text = true,
-  lsp_attach = lsp_attach,
-  capabilities = require('cmp_nvim_lsp').default_capabilities(),
-})
-
--- These are just examples. Replace them with the language
--- servers you have installed in your system
-require('lspconfig').gleam.setup({})
-require('lspconfig').rust_analyzer.setup({})
-
----
--- Autocompletion setup
----
-local cmp = require('cmp')
-
-cmp.setup({
-  sources = {
-    {name = 'nvim_lsp'},
-  },
-  snippet = {
-    expand = function(args)
-      -- You need Neovim v0.10 to use vim.snippet
-      vim.snippet.expand(args.body)
-    end,
-  },
-  mapping = cmp.mapping.preset.insert({}),
-})
-```
-
-:::
-
-## Plot twist
-
-You can get the same setup without lsp-zero.
-
-Did you notice we use **only one** function of lsp-zero in this getting started? There are [more functions](./reference/lua-api) but if extend_lspconfig is all you need then you don't have to install my plugin.
-
-::: details Expand: You might not need lsp-zero
-
-```lua
----
--- LSP configuration
----
+-- Reserve a space in the gutter
 vim.opt.signcolumn = 'yes'
 
-local lspconfig = require('lspconfig')
-
 -- Add cmp_nvim_lsp capabilities settings to lspconfig
-lspconfig.util.default_config.capabilities = vim.tbl_deep_extend(
+-- This should be executed before you configure any language server
+local lspconfig_defaults = require('lspconfig').util.default_config
+lspconfig_defaults.capabilities = vim.tbl_deep_extend(
   'force',
-  lspconfig.util.default_config.capabilities,
+  lspconfig_defaults.capabilities,
   require('cmp_nvim_lsp').default_capabilities()
 )
 
--- Executes the callback function every time a
--- language server is attached to a buffer.
+-- This is where you enable features that only work
+-- if there is a language server active in the file
 vim.api.nvim_create_autocmd('LspAttach', {
   desc = 'LSP actions',
   callback = function(event)
@@ -421,9 +345,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
 require('lspconfig').gleam.setup({})
 require('lspconfig').rust_analyzer.setup({})
 
----
--- Autocompletion setup
----
 local cmp = require('cmp')
 
 cmp.setup({
@@ -441,4 +362,23 @@ cmp.setup({
 ```
 
 :::
+
+## Plot twist
+
+Did you notice `lsp-zero` was not used in this section? That's because you don't need it to configure Neovim's LSP client. You can ignore it if you want to.
+
+But if you are interested you can use lsp-zero to...
+
+* [Enable format on save](./language-server-configuration#enable-format-on-save)
+* [Highlight symbol under the cursor](./reference/lua-api#highlight-symbol-client-bufnr)
+* [Add "supertab" behavior in nvim-cmp](./autocomplete#enable-super-tab)
+* [Make a regular tab complete](./autocomplete#regular-tab-complete)
+* [Show source label in nvim-cmp's menu](./reference/lua-api#cmp-format-opts)
+* [Configure lua_ls](./reference/lua-api#nvim-lua-settings-client-opts)
+* [Have a "global config" that applies to multiple servers](./reference/lua-api#client-config-opts)
+* [Reduce boilerplate code](./reference/lua-api#extend-lspconfig-opts)
+* [Inspect the configuration files in lspconfig](./reference/commands#lspzeroviewconfigsource)
+* [Create default keymaps](./reference/lua-api#default-keymaps-opts)
+* [Configure a language server without lspconfig](./reference/lua-api#new-client-opts)
+* [Setup omnifunc for code completion](./reference/lua-api#omnifunc-setup-opts)
 

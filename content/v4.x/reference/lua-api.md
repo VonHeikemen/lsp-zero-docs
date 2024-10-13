@@ -12,7 +12,7 @@ next:
 
 ## extend_lspconfig(*opts*)
 
-Handle some basic configuration steps and makes lspconfig easier to work with.
+An abstraction layer over the process described in the [getting started page](../getting-started#extend-nvim-lspconfig). It Handles some basic configuration steps.
 
 `{opts}` supports the following properties:
 
@@ -83,8 +83,6 @@ lsp_zero.ui({
 
 Execute `{callback}` function every time a server is attached to a buffer.
 
-This can be used if you don't have [lspconfig](https://github.com/neovim/nvim-lspconfig) installed.
-
 ```lua
 local lsp_zero = require('lsp-zero')
 
@@ -120,20 +118,18 @@ You can use this function when a language server is attached to a buffer.
 ```lua
 local lsp_zero = require('lsp-zero')
 
-local lsp_attach = function(client, bufnr)
-  -- see :help lsp-zero-keybindings
-  -- to learn the available actions
-  lsp_zero.default_keymaps({buffer = bufnr})
-end
-
-lsp_zero.extend_lspconfig({
-  lsp_attach = lsp_attach,
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(event)
+    -- see :help lsp-zero-keybindings
+    -- to learn the available actions
+    lsp_zero.default_keymaps({buffer = event.buf})
+  end
 })
 ```
 
 ## highlight_symbol(*client*, *bufnr*)
 
-Uses the [CursorHold](https://neovim.io/doc/user/autocmd.html#CursorHold) event to trigger a document highlight request. In other words, it will highlight the symbol under the cursor.
+Triggers a document highlight request in the [CursorHold](https://neovim.io/doc/user/autocmd.html#CursorHold) event. In other words, it will highlight the symbol under the cursor.
 
 For this to work properly your colorscheme needs to set these highlight groups: `LspReferenceRead`, `LspReferenceText` and `LspReferenceWrite`.
 
@@ -144,12 +140,16 @@ vim.opt.updatetime = 500
 
 local lsp_zero = require('lsp-zero')
 
-local lsp_attach = function(client, bufnr)
-  lsp_zero.highlight_symbol(client, bufnr)
-end
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(event)
+    local id = vim.tbl_get(event, 'data', 'client_id')
+    local client = id and vim.lsp.get_client_by_id(id)
+    if client == nil then
+      return
+    end
 
-lsp_zero.extend_lspconfig({
-  lsp_attach = lsp_attach,
+    lsp_zero.highlight_symbol(client, bufnr)
+  end
 })
 
 -- Replace the language servers listed here
@@ -180,7 +180,6 @@ When you enable format on save the language server is doing the formatting. The 
 
 ```lua
 local lsp_zero = require('lsp-zero')
-lsp_zero.extend_lspconfig({})
 
 -- don't add this function in the `lsp_attach` callback.
 -- `format_on_save` should run only once, before the language servers are active.
@@ -220,12 +219,18 @@ Tabs and indents can change after the language server formats the code in the fi
 ```lua
 local lsp_zero = require('lsp-zero')
 
-local lsp_attach = function(client, bufnr)
-  lsp_zero.buffer_autoformat()
-end
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(event)
+    local id = vim.tbl_get(event, 'data', 'client_id')
+    local client = id and vim.lsp.get_client_by_id(id)
+    if client == nil then
+      return
+    end
 
-lsp_zero.extend_lspconfig({
-  lsp_attach = lsp_attach,
+    if client.supports_method('textDocument/formatting') then
+      lsp_zero.buffer_autoformat()
+    end
+  end
 })
 
 -- Replace the language servers listed here
@@ -254,7 +259,6 @@ Do not use this in the global `on_attach`, call this function with the specific 
 
 ```lua
 local lsp_zero = require('lsp-zero')
-lsp_zero.extend_lspconfig({})
 
 require('lspconfig').gleam.setup({
   on_attach = function(client, bufnr)
@@ -287,7 +291,6 @@ Tabs and indents can change after the language server formats the code in the fi
 
 ```lua
 local lsp_zero = require('lsp-zero')
-lsp_zero.extend_lspconfig({})
 
 -- don't add this function in the `lsp_attach` callback.
 -- `format_mapping` should run only once, before the language servers are active.
@@ -325,7 +328,6 @@ Useful when you need to pass some options to a specific language server. Takes t
 
 ```lua
 local lsp_zero = require('lsp-zero')
-lsp_zero.extend_lspconfig({})
 
 lsp_zero.configure('lua_ls', {
   single_file_support = false,
@@ -345,7 +347,6 @@ Ideally, you would setup some default values for your servers in your Neovim con
 -- init.lua
 
 local lsp_zero = require('lsp-zero')
-lsp_zero.extend_lspconfig({})
 
 lsp_zero.configure('pyright', {
   single_file_support = false,
@@ -384,7 +385,6 @@ Returns settings specific to Neovim for the lua language server, lua_ls. If you 
 
 ```lua
 local lsp_zero = require('lsp-zero')
-lsp_zero.extend_lspconfig({})
 
 local lua_opts = lsp_zero.nvim_lua_ls()
 require('lspconfig').lua_ls.setup(lua_opts)
@@ -400,7 +400,6 @@ You can use `{opts}` to override or add your own settings.
 
 ```lua
 local lsp_zero = require('lsp-zero')
-lsp_zero.extend_lspconfig({})
 
 require('lspconfig').lua_ls.setup({
   on_init = function(client)
@@ -413,11 +412,8 @@ require('lspconfig').lua_ls.setup({
 
 Share the configuration provided in `{opts}` with all the language servers setup with [lsp-zero.new_client()](#new-client-opts) or [lspconfig](https://github.com/neovim/nvim-lspconfig).
 
-For example:
-
 ```lua
 local lsp_zero = require('lsp-zero')
-lsp_zero.extend_lspconfig({})
 
 lsp_zero.client_config({
   on_init = function(client)
@@ -454,9 +450,7 @@ Here is an example that starts the language server for gleam, but only in a proj
 ```lua
 local lsp_zero = require('lsp-zero')
 
-lsp_zero.ui({sign_text = true})
-
-lsp_zero.on_attach(function()
+lsp_zero.on_attach(function(client, bufnr)
   -- see :help lsp-zero-keybindings
   -- to learn the available actions
   lsp_zero.default_keymaps({buffer = bufnr})
@@ -465,7 +459,7 @@ end)
 lsp_zero.new_client({
   cmd = {'gleam', 'lsp'},
   filetypes = {'gleam'},
-  root_dir = function()
+  root_dir = function(bufnr)
     -- You need Neovim v0.10 to use vim.fs.root
     return vim.fs.root(bufnr, {'gleam.toml'})
   end
@@ -654,10 +648,6 @@ You can use this as an "empty handler" for [mason-lspconfig.nvim](https://github
 
 ```lua
 local lsp_zero = require('lsp-zero')
-
-lsp_zero.on_attach(function(client, bufnr)
-  lsp_zero.default_keymaps({buffer = bufnr})
-end)
 
 require('mason').setup({})
 require('mason-lspconfig').setup({

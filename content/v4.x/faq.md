@@ -20,20 +20,16 @@ Yes. [Full answer is here](./language-server-configuration#how-to-format-file-us
 
 I hope you mean custom snippets like [friendly snippets](https://github.com/rafamadriz/friendly-snippets), 'cause some language servers already provide snippets. Anyway, [the answer is here](./autocomplete#add-an-external-collection-of-snippets).
 
-## Why no discord server?
-
-I don't know how to setup one.
-
 ## Do you have Github sponsor setup?
 
-Last time I checked it doesn't work on my country. I only have a [buy me a coffee](https://www.buymeacoffee.com/vonheikemen).
+Last time I checked it doesn't work on my country. You can support me in [ko-fi.com/vonheikemen](https://ko-fi.com/vonheikemen).
 
 ## Have more questions?
 
 You can ask in
 
 * [Github discussions](https://github.com/VonHeikemen/lsp-zero.nvim/discussions)
-* [Matrix channel of lsp-zero](https://matrix.to/#/#lsp-zero-nvim:matrix.org)
+* [Matrix room of lsp-zero](https://matrix.to/#/#lsp-zero-nvim:matrix.org)
 
 Or you can reach out to me in
 
