@@ -35,7 +35,7 @@ function sidebar() {
   return [
     {
       text: 'Blog posts',
-      collapsed: true,
+      collapsed: false,
       items: [
         { text: 'You might not need lsp-zero', link: '/you-might-not-need-lsp-zero' },
         { text: 'ThePrimeagen 0 to LSP', link: '/theprimeagens-config-from-2022' },
