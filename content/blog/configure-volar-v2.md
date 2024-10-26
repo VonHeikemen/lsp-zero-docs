@@ -172,7 +172,7 @@ So the complete configuration code should be something like this.
 require('mason').setup({})
 require('mason-lspconfig').setup({
   ensure_installed = {
-    'tsserver',
+    'ts_ls',
     'volar',
   },
   handlers = {
