@@ -40,6 +40,7 @@ function sidebar() {
         { text: 'You might not need lsp-zero', link: '/you-might-not-need-lsp-zero' },
         { text: 'ThePrimeagen 0 to LSP', link: '/theprimeagens-config-from-2022' },
         { text: 'Configure volar 2.0', link: '/configure-volar-v2' },
+        { text: 'Setup with nvim-jdtls', link: '/setup-with-nvim-jdtls' },
       ]
     }
   ];
