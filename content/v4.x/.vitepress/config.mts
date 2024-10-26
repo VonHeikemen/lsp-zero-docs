@@ -14,6 +14,7 @@ export default defineConfig({
     nav: [
       { text: 'Documentation: v4.x', link: '/getting-started' },
       { text: 'Tutorial', link: '/tutorial' },
+      { text: 'Blog', link: 'https://lsp-zero.netlify.app/blog/' },
       {
         text: 'Community',
         items: [
