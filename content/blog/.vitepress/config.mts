@@ -41,6 +41,7 @@ function sidebar() {
         { text: 'ThePrimeagen 0 to LSP', link: '/theprimeagens-config-from-2022' },
         { text: 'Configure volar 2.0', link: '/configure-volar-v2' },
         { text: 'Setup with nvim-jdtls', link: '/setup-with-nvim-jdtls' },
+        { text: 'Configure efm', link: '/configure-efm' },
       ]
     }
   ];
