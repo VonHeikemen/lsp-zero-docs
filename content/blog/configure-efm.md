@@ -5,6 +5,8 @@ next: false
 
 # Configure the efm language server in lua
 
+> Last updated: 2024-10-27
+
 With the help of [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig).
 
 ## Initialization

@@ -5,6 +5,8 @@ next: false
 
 # Configure volar 2.0 (with typescript support)
 
+> Last updated: 2024-10-26
+
 Volar 2.0 has discontinued their "take over mode" which in previous version provided support for typescript in vue files. The new approach to get typescript support involves using the typescript language server along side volar. So here I'll show you the steps necessary to make the typescript language server (`ts_ls`) work in vue files.
 
 Is worth mention the solution I'm about to show is not specific to lsp-zero. You can follow these steps even if you don't use lsp-zero.

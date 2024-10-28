@@ -5,6 +5,8 @@ next: false
 
 # Setup with nvim-jdtls
 
+> Last updated: 2024-10-12
+
 Here we will focus on getting a working configuration using [nvim-jdtls](https://github.com/mfussenegger/nvim-jdtls). The code in this guide will based of [starter.lvim/ftplugin/java.lua](https://github.com/LunarVim/starter.lvim/blob/a36820712ec282b201be431e7eb47a4bf32888c8/ftplugin/java.lua) and also the official documentation of nvim-jdtls.
 
 ## Requirements

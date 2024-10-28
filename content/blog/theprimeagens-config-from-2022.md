@@ -4,6 +4,8 @@ prev: false
 
 # ThePrimeagen's 0 to LSP (updated)
 
+> Last updated: 2024-09-16
+
 On december of 2022 ThePrimeagen released the video [0 to LSP: Neovim RC From Scratch](https://www.youtube.com/watch?v=w7i4amO_zaE). In there you can see Prime setting up lsp-zero **version 1**. The code he shows in the video doesn't work on newer versions of lsp-zero.
 
 Now this may sound weird to you but ThePrimeagen's config doesn't need lsp-zero. He stopped using lsp-zero and updated his github repository [ThePrimeagen/init.lua](https://github.com/ThePrimeagen/init.lua). So I'm going to show the snippet of code you need.

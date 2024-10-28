@@ -5,6 +5,8 @@ next: false
 
 # You might not need lsp-zero
 
+> Last updated: 2024-10-28
+
 Before we start, let me just say this: if you are willing to make an effort, you don't need any plugins at all. You can use [Neovim's LSP client without plugins](https://vonheikemen.github.io/devlog/tools/neovim-lsp-client-guide/).
 
 But if you do want to have nice things, like automatic setup of language servers, keep reading.
@@ -50,17 +52,15 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 local lsp_capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-local default_setup = function(server)
-  require('lspconfig')[server].setup({
-    capabilities = lsp_capabilities,
-  })
-end
-
 require('mason').setup({})
 require('mason-lspconfig').setup({
   ensure_installed = {},
   handlers = {
-    default_setup,
+    function(server_name)
+      require('lspconfig')[server_name].setup({
+        capabilities = lsp_capabilities,
+      })
+    end,
   },
 })
 
@@ -91,7 +91,11 @@ If you need a custom config for a language server, add a handler to `mason-lspco
 require('mason-lspconfig').setup({
   ensure_installed = {},
   handlers = {
-    default_setup,
+    function(server_name)
+      require('lspconfig')[server_name].setup({
+        capabilities = lsp_capabilities,
+      })
+    end,
     lua_ls = function()
       require('lspconfig').lua_ls.setup({
         capabilities = lsp_capabilities,
