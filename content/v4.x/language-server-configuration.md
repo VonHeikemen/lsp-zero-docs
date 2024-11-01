@@ -241,7 +241,7 @@ If you have multiple servers active in one file it'll try to format using all of
 
 It's worth mention `buffer_autoformat()` only works if formatting is a blocking (synchronous) process. If you want something that behaves like `buffer_autoformat()` but is asynchronous you'll have to use [lsp-format.nvim](https://github.com/lukas-reineke/lsp-format.nvim).
 
-```lua
+```lua{12}
 vim.api.nvim_create_autocmd('LspAttach', {
   callback = function(event)
     local id = vim.tbl_get(event, 'data', 'client_id')
