@@ -5,28 +5,6 @@ next: false
 
 # What to do when a language server doesn't start?
 
-## Make sure you have the latest version of lsp-zero
-
-Everything here assumes you are using the `v4.x` branch of lsp-zero.
-
-You can check the version of lsp-zero you have installed using this command.
-
-```
-:help lsp-zero-version
-```
-
-That command will take you to the help page of lsp-zero, and it should show you this.
-
-```
-Version                                                      lsp-zero-version
-
-Current version: v4.x
-
-Neovim v0.10 or greater is recommended.
-
-Neovim v0.8 can still work but requires extra configuration steps.
-```
-
 ## Ensure the executable is on your PATH
 
 Before we start, do you know what is the "PATH"?
@@ -46,22 +24,18 @@ Here are a couple of links that can be useful to you.
 
 Now that you know, we can move on.
 
-You can check if Neovim can find the executable of a language server using this command.
+You can check if Neovim can find the executable of a language server using the command `:LspInfo`, that will show you information about all language servers you have configured with `lspconfig`.
 
-```lua
-:lua require('lsp-zero.check').executable('eslint')
-```
-
-Here `eslint` is just an example. You can replace it with the name of the language server you want to check.
-
-If the command is successfull you should a message like this.
+Open a file where the language server should be active, then execute the command `:LspInfo`. If the executable could not be found it you should get an error message like this one:
 
 ```
-LSP server: eslint
-+ "vscode-eslint-language-server" is executable
+- ERROR Failed to run healthcheck for "lspconfig" plugin. Exception:
+  Vim:E475: Invalid value for argument cmd: 'astro-ls' is not executable
 ```
 
-If the executable could not be found, update your PATH environment variable. Add the folder where the executable of the language server is located.
+Here I'm using the astro language server as an example. That's why it shows `cmd: 'astro-ls' is not executable`.
+
+If you get something like this, try to update your PATH environment variable. Add the folder where the executable of the language server is located.
 
 ## Inspect the log file
 
@@ -95,25 +69,27 @@ If your language server is not on this list execute the command `:LspInstall` wi
 
 ## Ensure the setup function for the language server was called
 
-Open Neovim using this commmand `nvim test`. The idea here is that you open Neovim with an empty buffer with no filetype (why? just in case you are lazy loading lspconfig). Now execute the command `:LspInfo`, this will show a floating window with some information. You should have something like this.
+Open Neovim using this commmand `nvim test`. The idea here is that you open Neovim with an empty buffer with no filetype. Why? just in case you are lazy loading lspconfig. Now execute the command `:LspInfo`, this will open a new tabpage with some information. You should have something like this.
 
 ```
- Press q or <Esc> to close this window. Press <Tab> to view server doc.
- 
- Language client log: /home/dev/.local/state/nvim/lsp.log
- Detected filetype:  
- 
- 0 client(s) attached to this buffer: 
- 
- Configured servers list: ts_ls, eslint
+LSP configs active in this session (globally) ~
+- Configured servers: ts_ls, intelephense, rust_analyzer, lua_ls
+- OK Deprecated servers: (none)
+
+LSP configs active in this buffer (bufnr: 1) ~
+- Language client log: ~/.local/state/nvim/lsp.log
+- Detected filetype: ``
+- 0 client(s) attached to this buffer
+
+Docs for active configs: ~
 ```
 
-Notice at the bottom it says `Configured servers list`, your language server should be there. If it isn't, you need to make sure lspconfig's setup function is being called.
+Notice it says `Configured servers list`, your language server should be there. If it isn't, you need to make sure lspconfig's setup function is being called.
 
-If `eslint` were missing then you would need to make sure somewhere in your config this function is being called.
+If `lua_ls` were missing then you would need to make sure somewhere in your config this function is being called.
 
 ```lua
-require('lspconfig').eslint.setup({})
+require('lspconfig').lua_ls.setup({})
 ```
 
 If you used `mason-lspconfig` automatic setup then it's being called for you in the `handlers` option. You should have something like this.
@@ -135,20 +111,26 @@ When you execute the command `:LspInfo` inside an existing file you should get m
 Sometimes you will get something like this.
 
 ```
- Other clients that match the filetype: typescript
-
- Config: eslint
- 	filetypes:         javascript, typescript, vue, svelte, astro
- 	root directory:    Not found.
- 	cmd:               /home/dev/.local/bin/vscode-eslint-language-server --stdio
- 	cmd is executable: true
- 	autostart:         true
+LSP configs active in this buffer (bufnr: 1) ~
+- Language client log: ~/.local/state/nvim/lsp.log
+- Detected filetype: `typescript`
+- 0 client(s) attached to this buffer
+- Other clients that match the "typescript" filetype:
+- Config: ts_ls
+  filetypes:         javascript, javascriptreact, typescript, typescriptreact
+  cmd:               ~/.local/bin/typescript-language-server --stdio
+  version:           `4.3.3`
+  executable:        true
+  autostart:         true
+  root directory:    Not found.
 ```
+
+In this example the language server for typescript is not active in the current file.
 
 The important bit is this.
 
 ```
- 	root directory:    Not found.
+  root directory:    Not found.
 ```
 
 This means `lspconfig` could not figure out what is the root of your project.
@@ -157,12 +139,12 @@ lspconfig will look for some common configuration file in the current directory 
 
 How do you know which files lspconfig looks for? Ideally, you would know because you read the documentation. Each server looks for a particular set of files and you can find that information here: [configs.md](https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md).
 
-Sometimes the documentation in lspconfig just says `see source file` in the `root_dir` section. In this case what you can do is inspect the source code of lspconfig. You can use the command `:LspZeroViewConfigSource` with the name of a language server, this will open the configuration file for that server in a split window.
+Sometimes the documentation in lspconfig just says `see source file` in the `root_dir` section. In this case what you can do is inspect the source code of lspconfig. If you have lsp-zero installed you can use the command `:LspZeroViewConfigSource` with the name of a language server, this will open the configuration file for that server in a split window.
 
-So you can inspect `eslint` config using this.
+So you can inspect `ts_ls` config using this.
 
 ```
-:LspZeroViewConfigSource eslint
+:LspZeroViewConfigSource ts_ls
 ```
 
 Once there, you can look for a property called `root_dir`. This property is usually a lua function, so you might find some amount of logic there, but you can still get an idea of which files lspconfig looks for.
