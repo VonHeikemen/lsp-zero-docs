@@ -202,9 +202,25 @@ lsp_zero.format_on_save({
 
 ### Always use the active servers
 
-If you only ever have **one** language server attached in each file and you are happy with all of them, you can call the function [lsp-zero.buffer_autoformat()](./reference/lua-api#buffer-autoformat-client-bufnr-opts) when a language server is active in the current buffer.
+If you only ever have **one** language server attached in each file and you are happy with all of them, you can setup an autocommand that triggers [vim.lsp.buf.format()](https://neovim.io/doc/user/lsp.html#vim.lsp.buf.format()) on the event `BufWritePre`.
 
-```lua{11}
+```lua{1-15,27}
+local buffer_autoformat = function(bufnr)
+  local group = 'lsp_autoformat'
+  vim.api.nvim_create_augroup(group, {clear = false})
+  vim.api.nvim_clear_autocmds({group = group, buffer = bufnr})
+
+  vim.api.nvim_create_autocmd('BufWritePre', {
+    buffer = bufnr,
+    group = group,
+    desc = 'LSP format on save',
+    callback = function()
+      -- note: do not enable async formatting
+      vim.lsp.buf.format({async = false, timeout_ms = 10000})
+    end,
+  })
+end
+
 vim.api.nvim_create_autocmd('LspAttach', {
   callback = function(event)
     local id = vim.tbl_get(event, 'data', 'client_id')
@@ -215,7 +231,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
     -- make sure there is at least one client with formatting capabilities
     if client.supports_method('textDocument/formatting') then
-      require('lsp-zero').buffer_autoformat()
+      buffer_autoformat(event.buf)
     end
   end
 })
@@ -223,7 +239,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 If you have multiple servers active in one file it'll try to format using all of them, and I can't guarantee the order.
 
-It's worth mentioning [lsp-zero.buffer_autoformat()](./reference/lua-api#buffer-autoformat-client-bufnr-opts) is a blocking (synchronous) function. If you want something that behaves like [lsp-zero.buffer_autoformat()](./reference/lua-api#buffer-autoformat-client-bufnr-opts) but is asynchronous you'll have to use [lsp-format.nvim](https://github.com/lukas-reineke/lsp-format.nvim).
+It's worth mention `buffer_autoformat()` only works if formatting is a blocking (synchronous) process. If you want something that behaves like `buffer_autoformat()` but is asynchronous you'll have to use [lsp-format.nvim](https://github.com/lukas-reineke/lsp-format.nvim).
 
 ```lua
 vim.api.nvim_create_autocmd('LspAttach', {
@@ -270,7 +286,7 @@ end
 
 vim.api.nvim_create_autocmd('LspAttach', {
   callback = function(event)
-    local opts = {buffer = bufnr}
+    local opts = {buffer = event.buf}
 
     vim.keymap.set({'n', 'x'}, 'gq', function()
       vim.lsp.buf.format({
