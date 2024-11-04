@@ -175,34 +175,9 @@ require('lspconfig').name_of_my_lsp.setup({})
 
 ## Enable Format on save
 
-You have two ways to enable format on save.
+You can setup an autocommand that triggers [vim.lsp.buf.format()](https://neovim.io/doc/user/lsp.html#vim.lsp.buf.format()) on the event `BufWritePre`.
 
-Note: When you enable format on save your language server is doing the formatting. The language server does not share the same style configuration as Neovim. Tabs and indents can change after the language server formats the code in the file. Read the documentation of the language server you are using, figure out how to configure it to your prefered style.
-
-### Explicit setup
-
-If you want to control exactly what language server is used to format a file call the function [lsp-zero.format_on_save()](./reference/lua-api#format-on-save-opts), this will allow you to associate a language server with a list of filetypes.
-
-```lua
-local lsp_zero = require('lsp-zero')
-
--- don't add this function in the `LspAttach` event.
--- `format_on_save` should run only once.
-lsp_zero.format_on_save({
-  format_opts = {
-    async = false,
-    timeout_ms = 10000,
-  },
-  servers = {
-    ['biome'] = {'javascript', 'typescript'},
-    ['rust_analyzer'] = {'rust'},
-  }
-})
-```
-
-### Always use the active servers
-
-If you only ever have **one** language server attached in each file and you are happy with all of them, you can setup an autocommand that triggers [vim.lsp.buf.format()](https://neovim.io/doc/user/lsp.html#vim.lsp.buf.format()) on the event `BufWritePre`.
+When you enable format on save your language server is doing the formatting. The language server does not share the same style configuration as Neovim. Tabs and indents can change after the language server formats the code in the file. Read the documentation of the language server you are using, figure out how to configure it to your prefered style.
 
 ```lua{1-15,27}
 local buffer_autoformat = function(bufnr)
@@ -261,8 +236,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 ## Format using a keybinding
 
-### Using built-in functions
-
 You'll want to bind the function [vim.lsp.buf.format()](https://neovim.io/doc/user/lsp.html#vim.lsp.buf.format()) to a keymap. The next example will create a keymap `gq` to format the current buffer using **all** active servers with formatting capabilities.
 
 ```lua{11-13}
@@ -296,31 +269,6 @@ vim.api.nvim_create_autocmd('LspAttach', {
       })
     end, opts)
   end
-})
-
-
-```
-
-### Ensure only one language server per filetype
-
-If you want to control exactly what language server can format, use the function [lsp-zero.format_mapping()](./reference/lua-api#format-mapping-key-opts). It will allow you to associate a list of filetypes to a particular language server.
-
-Here is an example using `gq` as the keymap.
-
-```lua
-local lsp_zero = require('lsp-zero')
-
--- don't add this function in the `LspAttach` autocommand.
--- `format_mapping` should run only once.
-lsp_zero.format_mapping('gq', {
-  format_opts = {
-    async = false,
-    timeout_ms = 10000,
-  },
-  servers = {
-    ['biome'] = {'javascript', 'typescript'},
-    ['rust_analyzer'] = {'rust'},
-  }
 })
 ```
 

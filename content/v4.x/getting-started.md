@@ -369,7 +369,7 @@ Did you notice `lsp-zero` was not used in this section? That's because you don't
 
 But if you are interested you can use lsp-zero to...
 
-* [Enable format on save](./language-server-configuration#enable-format-on-save)
+* [Enable format on save (per server)](./reference/lua-api#format-on-save-opts)
 * [Highlight symbol under the cursor](./reference/lua-api#highlight-symbol-client-bufnr)
 * [Add "supertab" behavior in nvim-cmp](./autocomplete#enable-super-tab)
 * [Make a regular tab complete](./autocomplete#regular-tab-complete)
