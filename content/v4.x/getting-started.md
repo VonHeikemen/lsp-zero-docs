@@ -371,7 +371,7 @@ But if you are interested you can use lsp-zero to...
 
 * [Enable format on save (per server)](./reference/lua-api#format-on-save-opts)
 * [Highlight symbol under the cursor](./reference/lua-api#highlight-symbol-client-bufnr)
-* [Add "supertab" behavior in nvim-cmp](./autocomplete#enable-super-tab)
+* [Implement common mappings in nvim-cmp](./reference/lua-api#cmp-action)
 * [Make a regular tab complete](./autocomplete#regular-tab-complete)
 * [Show source label in nvim-cmp's menu](./reference/lua-api#cmp-format-opts)
 * [Configure lua_ls](./reference/lua-api#nvim-lua-settings-client-opts)

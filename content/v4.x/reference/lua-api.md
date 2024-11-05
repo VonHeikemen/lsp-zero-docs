@@ -640,6 +640,36 @@ These are the supported methods:
 
 Quick note: "the fallback" is the default behavior of the key you assign to a method.
 
+```lua{2,14-25}
+local cmp = require('cmp')
+local cmp_action = require('lsp-zero').cmp_action()
+
+cmp.setup({
+  sources = {
+    {name = 'nvim_lsp'},
+  },
+  snippet = {
+    expand = function(args)
+      vim.snippet.expand(args.body)
+    end,
+  },
+  mapping = cmp.mapping.preset.insert({
+    -- Toggle completion menu
+    ['<C-space>'] = cmp_action.toggle_completion(),
+
+    -- Jump to the next snippet placeholder
+    ['<C-f>'] = cmp_action.vim_snippet_jump_forward(),
+
+    -- Jump to the previous snippet placeholder
+    ['<C-b>'] = cmp_action.vim_snippet_jump_backward(),
+
+    -- Simple tab complete
+    ['<Tab>'] = cmp_action.tab_complete(),
+    ['<S-Tab>'] = cmp.mapping.select_prev_item({behavior = 'select'}),
+  }),
+})
+```
+
 ## noop()
 
 Doesn't do anything. Literally.

@@ -98,11 +98,8 @@ We don't need to write our own snippets, we can download a collection like [frie
 
 Here is the code you would need to load `friendly-snippets` into nvim-cmp.
 
-```lua{5,10}
+```lua{2,7,11}
 local cmp = require('cmp')
-local cmp_action = require('lsp-zero').cmp_action()
-local cmp_format = require('lsp-zero').cmp_format({details = true})
-
 require('luasnip.loaders.from_vscode').lazy_load()
 
 cmp.setup({
@@ -110,17 +107,31 @@ cmp.setup({
     {name = 'nvim_lsp'},
     {name = 'luasnip'},
   },
-  mapping = cmp.mapping.preset.insert({
-    ['<C-f>'] = cmp_action.luasnip_jump_forward(),
-    ['<C-b>'] = cmp_action.luasnip_jump_backward(),
-  }),
   snippet = {
     expand = function(args)
       require('luasnip').lsp_expand(args.body)
     end,
   },
-  --- (Optional) Show source name in completion menu
-  formatting = cmp_format,
+  mapping = cmp.mapping.preset.insert({
+    -- Jump to the next snippet placeholder
+    ['<C-f>'] = cmp.mapping(function(fallback)
+      local luasnip = require('luasnip')
+      if luasnip.locally_jumpable(1) then
+        luasnip.jump(1)
+      else
+        fallback()
+      end
+    end, {'i', 's'}),
+    -- Jump to the previous snippet placeholder
+    ['<C-b>'] = cmp.mapping(function(fallback)
+      local luasnip = require('luasnip')
+      if luasnip.locally_jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
+      end
+    end, {'i', 's'}),
+  }),
 })
 ```
 
@@ -192,20 +203,45 @@ This feature only works if you use [luasnip](https://github.com/L3MON4D3/LuaSnip
 
 If the completion menu is visible it will navigate to the next item in the list. If the cursor is on top of a "snippet trigger" it'll expand it. If the cursor can jump to a snippet placeholder, it moves to it. If the cursor is in the middle of a word it displays the completion menu. Else, it acts like a regular `Tab` key.
 
-```lua{2,6-7}
+```lua
 local cmp = require('cmp')
-local cmp_action = require('lsp-zero').cmp_action()
 
 cmp.setup({
-  mapping = cmp.mapping.preset.insert({
-    ['<Tab>'] = cmp_action.luasnip_supertab(),
-    ['<S-Tab>'] = cmp_action.luasnip_shift_supertab(),
-  }),
   snippet = {
     expand = function(args)
       require('luasnip').lsp_expand(args.body)
     end,
   },
+  mapping = cmp.mapping.preset.insert({
+    -- Super tab
+    ['<Tab>'] = cmp.mapping(function(fallback)
+      local luasnip = require('luasnip')
+      local col = vim.fn.col('.') - 1
+
+      if cmp.visible() then
+        cmp.select_next_item({behavior = 'select'})
+      elseif luasnip.expand_or_locally_jumpable() then
+        luasnip.expand_or_jump()
+      elseif col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
+        fallback()
+      else
+        cmp.complete()
+      end
+    end, {'i', 's'}),
+
+    -- Super shift tab
+    ['<S-Tab>'] = cmp.mapping(function(fallback)
+      local luasnip = require('luasnip')
+
+      if cmp.visible() then
+        cmp.select_prev_item({behavior = 'select'})
+      elseif luasnip.locally_jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
+      end
+    end, {'i', 's'}),
+  }),
 })
 ```
 
@@ -213,13 +249,25 @@ cmp.setup({
 
 Trigger the completion menu when the cursor is inside a word. If the completion menu is visible it will navigate to the next item in the list. If the line is empty it acts like a regular `Tab` key.
 
-```lua{2,6-7}
+```lua
 local cmp = require('cmp')
-local cmp_action = require('lsp-zero').cmp_action()
 
 cmp.setup({
   mapping = cmp.mapping.preset.insert({
-    ['<Tab>'] = cmp_action.tab_complete(),
+    -- Simple tab complete
+    ['<Tab>'] = cmp.mapping(function(fallback)
+      local col = vim.fn.col('.') - 1
+
+      if cmp.visible() then
+        cmp.select_next_item({behavior = 'select'})
+      elseif col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
+        fallback()
+      else
+        cmp.complete()
+      end
+    end, {'i', 's'}),
+
+    -- Go to previous item
     ['<S-Tab>'] = cmp.mapping.select_prev_item({behavior = 'select'}),
   }),
 })
