@@ -22,16 +22,13 @@ Before doing anything, make sure you...
 
 Use your favorite method to install these plugins.
 
-  * [VonHeikemen/lsp-zero.nvim](https://github.com/VonHeikemen/lsp-zero.nvim/tree/v4.x)
   * [neovim/nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)
   * [hrsh7th/nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
   * [hrsh7th/cmp-nvim-lsp](https://github.com/hrsh7th/cmp-nvim-lsp)
 
-
 ::: details Expand: lazy.nvim
 
 ```lua
-{'VonHeikemen/lsp-zero.nvim', branch = 'v4.x'},
 {'neovim/nvim-lspconfig'},
 {'hrsh7th/cmp-nvim-lsp'},
 {'hrsh7th/nvim-cmp'},
@@ -44,7 +41,6 @@ For a more advance config that lazy loads everything take a look at the example 
 ::: details Expand: paq.nvim
 
 ```lua
-{'VonHeikemen/lsp-zero.nvim', branch = 'v4.x'},
 {'neovim/nvim-lspconfig'},
 {'hrsh7th/cmp-nvim-lsp'},
 {'hrsh7th/nvim-cmp'},
@@ -57,7 +53,6 @@ For a more advance config that lazy loads everything take a look at the example 
 [lewis6991/pckr.nvim](https://github.com/lewis6991/pckr.nvim) is the spiritual successor of `packer.nvim`.
 
 ```lua
-{'VonHeikemen/lsp-zero.nvim', branch = 'v4.x'};
 {'neovim/nvim-lspconfig'};
 {'hrsh7th/cmp-nvim-lsp'};
 {'hrsh7th/nvim-cmp'};
@@ -70,7 +65,6 @@ For a more advance config that lazy loads everything take a look at the example 
 Note [wbthomason/packer.nvim](https://github.com/wbthomason/packer.nvim) has been officially unmantained since August 2023.
 
 ```lua
-use({'VonHeikemen/lsp-zero.nvim', branch = 'v4.x'})
 use({'neovim/nvim-lspconfig'})
 use({'hrsh7th/nvim-cmp'})
 use({'hrsh7th/cmp-nvim-lsp'})
@@ -81,7 +75,6 @@ use({'hrsh7th/cmp-nvim-lsp'})
 ::: details Expand: mini.deps
 
 ```lua
-MiniDeps.add({source = 'VonHeikemen/lsp-zero.nvim', checkout = 'v4.x'})
 MiniDeps.add({source = 'neovim/nvim-lspconfig'})
 MiniDeps.add({
   source = 'hrsh7th/nvim-cmp',
@@ -99,7 +92,6 @@ MiniDeps.add({
 Plug 'neovim/nvim-lspconfig'
 Plug 'hrsh7th/nvim-cmp'
 Plug 'hrsh7th/cmp-nvim-lsp'
-Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v4.x'}
 ```
 
 When using vimscript you can wrap lua code in `lua <<EOF ... EOF`.
@@ -113,12 +105,6 @@ EOF
 :::
 
 ::: details Expand: rocks.nvim
-
-Is worth mention I don't manage the package that is hosted on luarocks. I think the developers of rocks.nvim have an automated process that does all the things. Also, I don't manage the versions of lsp-zero with git tags, I do it with branches. This means you'll have to install the "development" version.
-
-```
-Rocks install lsp-zero.nvim scm
-```
 
 Install nvim-lspconfig.
 
@@ -155,12 +141,6 @@ To install a plugin without a plugin manager you just have to download them in t
   Create that folder and navigate to it. Use whatever method you know best.
 
   Use the command `git clone` inside that folder.
-
-* Install lsp-zero
-
-  ```sh
-  git clone --branch=v4.x https://github.com/VonHeikemen/lsp-zero.nvim.git
-  ```
 
 * Install nvim-lspconfig
 
@@ -362,23 +342,4 @@ cmp.setup({
 ```
 
 :::
-
-## Plot twist
-
-Did you notice `lsp-zero` was not used in this section? That's because you don't need it to configure Neovim's LSP client. You can ignore it if you want to.
-
-But if you are interested you can use lsp-zero to...
-
-* [Enable format on save (per server)](./reference/lua-api#format-on-save-opts)
-* [Highlight symbol under the cursor](./reference/lua-api#highlight-symbol-client-bufnr)
-* [Implement common mappings in nvim-cmp](./reference/lua-api#cmp-action)
-* [Make a regular tab complete](./autocomplete#regular-tab-complete)
-* [Show source label in nvim-cmp's menu](./reference/lua-api#cmp-format-opts)
-* [Configure lua_ls](./reference/lua-api#nvim-lua-settings-client-opts)
-* [Have a "global config" that applies to multiple servers](./reference/lua-api#client-config-opts)
-* [Reduce boilerplate code](./reference/lua-api#extend-lspconfig-opts)
-* [Inspect the configuration files in lspconfig](./reference/commands#lspzeroviewconfigsource)
-* [Create default keymaps](./reference/lua-api#default-keymaps-opts)
-* [Configure a language server without lspconfig](./reference/lua-api#new-client-opts)
-* [Setup omnifunc for code completion](./reference/lua-api#omnifunc-setup-opts)
 

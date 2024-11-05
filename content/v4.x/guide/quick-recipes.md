@@ -23,8 +23,6 @@ require('ufo').setup()
 vim.keymap.set('n', 'zR', require('ufo').openAllFolds)
 vim.keymap.set('n', 'zM', require('ufo').closeAllFolds)
 
-local lsp_zero = require('lsp-zero')
-
 local lsp_capabilities = vim.tbl_deep_extend(
   'force',
   require('cmp_nvim_lsp').default_capabilities(),

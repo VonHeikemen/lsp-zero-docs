@@ -44,7 +44,6 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
-  {'VonHeikemen/lsp-zero.nvim', branch = 'v4.x'},
   {'williamboman/mason.nvim'},
   {'williamboman/mason-lspconfig.nvim'},
   {'neovim/nvim-lspconfig'},
@@ -90,10 +89,7 @@ require('mason-lspconfig').setup({
   }
 })
 
-local lsp_zero = require('lsp-zero')
-
 local cmp = require('cmp')
-local cmp_action = lsp_zero.cmp_action()
 
 -- this is the function that loads the extra snippets
 -- from rafamadriz/friendly-snippets
@@ -126,13 +122,26 @@ cmp.setup({
     ['<C-u>'] = cmp.mapping.scroll_docs(-4),
     ['<C-d>'] = cmp.mapping.scroll_docs(4),   
 
-    -- navigate between snippet placeholders
-    ['<C-f>'] = cmp_action.luasnip_jump_forward(),
-    ['<C-b>'] = cmp_action.luasnip_jump_backward(),
+    -- jump to the next snippet placeholder
+    ['<C-f>'] = cmp.mapping(function(fallback)
+      local luasnip = require('luasnip')
+      if luasnip.locally_jumpable(1) then
+        luasnip.jump(1)
+      else
+        fallback()
+      end
+    end, {'i', 's'}),
+
+    -- jump to the previous snippet placeholder
+    ['<C-b>'] = cmp.mapping(function(fallback)
+      local luasnip = require('luasnip')
+      if luasnip.locally_jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
+      end
+    end, {'i', 's'}),
   }),
-  -- note: if you are going to use lsp-kind (another plugin)
-  -- replace the line below with the function from lsp-kind
-  formatting = lsp_zero.cmp_format({details = true}),
 })
 ```
 

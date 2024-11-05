@@ -138,10 +138,9 @@ If you want to know more details about lazy.nvim, here are a few resources (that
 
 Now we need to add all the lua plugins in lazy's setup function.
 
-```lua{3-6}
+```lua{3-5}
 require('lazy').setup({
   {'folke/tokyonight.nvim'},
-  {'VonHeikemen/lsp-zero.nvim', branch = 'v4.x'},
   {'neovim/nvim-lspconfig'},
   {'hrsh7th/cmp-nvim-lsp'},
   {'hrsh7th/nvim-cmp'},
@@ -279,10 +278,9 @@ Anyway, if you choose this method you will need to add these two plugins:
 * `williamboman/mason.nvim`
 * `williamboman/mason-lspconfig.nvim`
 
-```lua{4-5}
+```lua{3-4}
 require('lazy').setup({
   {'folke/tokyonight.nvim'},
-  {'VonHeikemen/lsp-zero.nvim', branch = 'v4.x'},
   {'williamboman/mason.nvim'},
   {'williamboman/mason-lspconfig.nvim'},
   {'neovim/nvim-lspconfig'},
@@ -436,7 +434,6 @@ vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
   {'folke/tokyonight.nvim'},
-  {'VonHeikemen/lsp-zero.nvim', branch = 'v4.x'},
   {'neovim/nvim-lspconfig'},
   {'hrsh7th/cmp-nvim-lsp'},
   {'hrsh7th/nvim-cmp'},
@@ -541,7 +538,6 @@ vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
   {'folke/tokyonight.nvim'},
-  {'VonHeikemen/lsp-zero.nvim', branch = 'v4.x'},
   {'williamboman/mason.nvim'},
   {'williamboman/mason-lspconfig.nvim'},
   {'neovim/nvim-lspconfig'},

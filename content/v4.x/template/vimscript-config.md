@@ -18,7 +18,6 @@ call plug#begin()
   Plug 'williamboman/mason-lspconfig.nvim'
   Plug 'hrsh7th/nvim-cmp'
   Plug 'hrsh7th/cmp-nvim-lsp'
-  Plug 'VonHeikemen/lsp-zero.nvim', {'branch': 'v4.x'}
 call plug#end()
 
 function! LspAttached() abort
