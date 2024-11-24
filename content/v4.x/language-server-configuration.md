@@ -212,9 +212,15 @@ vim.api.nvim_create_autocmd('LspAttach', {
 })
 ```
 
-If you have multiple servers active in one file it'll try to format using all of them, and I can't guarantee the order.
+Note that when you have multiple servers active in one file it'll try to format using all of them.
 
-It's worth mention `buffer_autoformat()` only works if formatting is a blocking (synchronous) process. If you want something that behaves like `buffer_autoformat()` but is asynchronous you'll have to use [lsp-format.nvim](https://github.com/lukas-reineke/lsp-format.nvim).
+If you need to save the file without formatting you can create a command that executes the `write` command and skips **all** autocommands.
+
+```lua
+vim.api.nvim_create_user_command('Write', 'noautocmd write', {})
+```
+
+If you want more advanced features like asynchronous autoformatting or the ability to toggle the autoformat on demand, you can use the plugin [lsp-format.nvim](https://github.com/lukas-reineke/lsp-format.nvim).
 
 ```lua{12}
 vim.api.nvim_create_autocmd('LspAttach', {
