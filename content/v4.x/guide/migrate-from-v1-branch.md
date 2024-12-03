@@ -7,43 +7,28 @@ next: false
 
 I will assume you are using Neovim v0.10 or greater.
 
-Here you will find how to re-enable most of the features that were removed from the `v1.x` branch. If you want to see a complete config example, go to [example config](#example-config).
+Here you will find how to re-enable most of the features that were in the `v1.x` branch. If you want to see a complete config example, go to [example config](#example-config).
 
 ## Configure nvim-lspconfig
 
-All options and configurations that were done automatically to nvim-lspconfig are opt-in.
-
-Now you have to call the function [lsp-zero.extend_lspconfig()](../reference/lua-api#extend-lspconfig-opts).
+This is all the configuration that was done automatically in the `v1.x` branch.
 
 ```lua
-local lsp_zero = require('lsp-zero')
+-- Reserve a space in the gutter
+-- This will avoid an annoying layout shift in the screen
+vim.opt.signcolumn = 'yes'
 
-local lsp_attach = function(client, bufnr)
-  -- see :help lsp-zero-keybindings
-  -- to learn the available actions
-  lsp_zero.default_keymaps({buffer = bufnr})
-end
+-- Add borders to floating windows
+vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
+  vim.lsp.handlers.hover,
+  {border = 'rounded'}
+) 
+vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
+  vim.lsp.handlers.signature_help,
+  {border = 'rounded'}
+)
 
-lsp_zero.extend_lspconfig({
-  capabilities = require('cmp_nvim_lsp').default_capabilities(),
-  lsp_attach = lsp_attach,
-  float_border = 'rounded',
-  sign_text = {
-    error = '✘',
-    warn = '▲',
-    hint = '⚑',
-    info = ''
-  },
-})
-```
-
-## Configure diagnostics
-
-In `v4.x` lsp-zero doesn't configure diagnostics automatically. If you want to get the previous behaviour, add this code.
-
-```lua
-vim.keymap.set('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>')
-
+-- Configure error/warnings interface
 vim.diagnostic.config({
   virtual_text = false,
   severity_sort = true,
@@ -54,20 +39,65 @@ vim.diagnostic.config({
     header = '',
     prefix = '',
   },
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = '✘',
+      [vim.diagnostic.severity.WARN] = '▲',
+      [vim.diagnostic.severity.HINT] = '⚑',
+      [vim.diagnostic.severity.INFO] = '»',
+    },
+  },
+})
+
+-- Add cmp_nvim_lsp capabilities settings to lspconfig
+-- This should be executed before you configure any language server
+local lspconfig_defaults = require('lspconfig').util.default_config
+lspconfig_defaults.capabilities = vim.tbl_deep_extend(
+  'force',
+  lspconfig_defaults.capabilities,
+  require('cmp_nvim_lsp').default_capabilities()
+)
+
+-- This is where you enable features that only work
+-- if there is a language server active in the file
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(event)
+    local opts = {buffer = event.buf}
+
+    vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
+    vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
+    vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
+    vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
+    vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
+    vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
+    vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
+    vim.keymap.set('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>', opts)
+    vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
+    vim.keymap.set({'n', 'x'}, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
+    vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
+  end,
 })
 ```
 
 ## Configure the lua language server
 
-You will need to setup `lua_ls` using lspconfig, and then add the configuration using the function [lsp-zero.nvim_lua_ls()](../reference/lua-api#nvim-lua-settings-client-opts).
+You will need to setup `lua_ls` using lspconfig, and then add the configuration in the language server setup.
 
 ```lua
-local lsp_zero = require('lsp-zero')
-
 require('lspconfig').lua_ls.setup({
-  on_init = function(client)
-    lsp_zero.nvim_lua_settings(client, {})
-  end,
+  settings = {
+    Lua = {
+      runtime = {
+        version = 'LuaJIT'
+      },
+      diagnostics = {
+        globals = {'vim'},
+      },
+      workspace = {
+        library = {vim.env.VIMRUNTIME}
+      }
+    }
+  },
 })
 ```
 
@@ -94,7 +124,7 @@ require('mason-lspconfig').setup({
     function(server_name)
       require('lspconfig')[server_name].setup({})
     end,
-  }
+  },
 })
 ```
 
@@ -112,12 +142,22 @@ require('mason-lspconfig').setup({
     -- this is the "custom handler" for `lua_ls`
     lua_ls = function()
       require('lspconfig').lua_ls.setup({
-        on_init = function(client)
-          require('lsp-zero').nvim_lua_settings(client, {})
-        end,
+        settings = {
+          Lua = {
+            runtime = {
+              version = 'LuaJIT'
+            },
+            diagnostics = {
+              globals = {'vim'},
+            },
+            workspace = {
+              library = {vim.env.VIMRUNTIME}
+            }
+          },
+        },
       })
     end,
-  }
+  },
 })
 ```
 
@@ -125,10 +165,10 @@ require('mason-lspconfig').setup({
 
 You'll also need to use the option `handlers` in mason-lspconfig in order to disable a language server. This is in place of the `skip_server_setup` that was present in the `v1.x` branch.
 
-Use the function [lsp-zero.noop()](../reference/lua-api#noop) as a handler to make mason-lspconfig ignore the language server.
+Create an empty function and use it as a handler to make mason-lspconfig ignore the language server.
 
 ```lua
-local lsp_zero = require('lsp-zero')
+local noop = function() end
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
@@ -137,14 +177,14 @@ require('mason-lspconfig').setup({
     function(server_name)
       require('lspconfig')[server_name].setup({})
     end,
-    jdtls = lsp_zero.noop,
-  }
+    jdtls = noop,
+  },
 })
 ```
 
 ## Configure nvim-cmp
 
-lsp-zero version 4 doesn't configure nvim-cmp automatically. You will have to provide the minimal configuration to make autocompletion work.
+This is a minimal configuration to make autocompletion work.
 
 ```lua
 local cmp = require('cmp')
@@ -170,7 +210,6 @@ If you want to use the previous recommended config install these plugins in your
 * [hrsh7th/cmp-nvim-lsp](https://github.com/hrsh7th/cmp-nvim-lsp)
 * [hrsh7th/cmp-buffer](https://github.com/hrsh7th/cmp-buffer)
 * [hrsh7th/cmp-path](https://github.com/hrsh7th/cmp-path)
-* [hrsh7th/cmp-nvim-lua](https://github.com/hrsh7th/cmp-nvim-lua)
 * [saadparwaiz1/cmp_luasnip](https://github.com/saadparwaiz1/cmp_luasnip)
 * [rafamadriz/friendly-snippets](https://github.com/rafamadriz/friendly-snippets)
 * [L3MON4D3/LuaSnip](https://github.com/L3MON4D3/LuaSnip) 
@@ -183,7 +222,6 @@ cmp.setup({
   sources = {
     {name = 'path'},
     {name = 'nvim_lsp'},
-    {name = 'nvim_lua'},
     {name = 'buffer', keyword_length = 3},
     {name = 'luasnip', keyword_length = 2},
   },
@@ -192,7 +230,7 @@ cmp.setup({
       require('luasnip').lsp_expand(args.body)
     end,
   },
-  mapping = cmp.mapping.preset.insert({})
+  mapping = cmp.mapping.preset.insert({}),
 })
 ```
 
@@ -202,7 +240,6 @@ You can add the mappings you want in your cmp setup. This config uses the old ma
 
 ```lua
 local cmp = require('cmp')
-local cmp_action = require('lsp-zero').cmp_action()
 
 cmp.setup({
   sources = {
@@ -217,20 +254,56 @@ cmp.setup({
     -- confirm completion item
     ['<CR>'] = cmp.mapping.confirm({select = false}),
 
-    -- toggle completion menu
-    ['<C-e>'] = cmp_action.toggle_completion(),
-
-    -- tab complete
-    ['<Tab>'] = cmp_action.tab_complete(),
-    ['<S-Tab>'] = cmp.mapping.select_prev_item(),
-
-    -- navigate between snippet placeholder
-    ['<C-d>'] = cmp_action.luasnip_jump_forward(),
-    ['<C-b>'] = cmp_action.luasnip_jump_backward(),
-
     -- scroll documentation window
     ['<C-f>'] = cmp.mapping.scroll_docs(-5),
     ['<C-d>'] = cmp.mapping.scroll_docs(5),
+
+    -- toggle completion menu
+    ['<C-e>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.abort()
+      else
+        cmp.complete()
+      end
+    end),
+
+    -- tab complete
+    ['<Tab>'] = cmp.mapping(function(fallback)
+      local col = vim.fn.col('.') - 1
+
+      if cmp.visible() then
+        cmp.select_next_item({behavior = 'select'})
+      elseif col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
+        fallback()
+      else
+        cmp.complete()
+      end
+    end, {'i', 's'}),
+
+    -- go to previous item
+    ['<S-Tab>'] = cmp.mapping.select_prev_item({behavior = 'select'}),
+
+    -- navigate to next snippet placeholder
+    ['<C-d>'] = cmp.mapping(function(fallback)
+      local luasnip = require('luasnip')
+
+      if luasnip.jumpable(1) then
+        luasnip.jump(1)
+      else
+        fallback()
+      end
+    end, {'i', 's'}),
+
+    -- navigate to the previous snippet placeholder
+    ['<C-b>'] = cmp.mapping(function(fallback)
+      local luasnip = require('luasnip')
+
+      if luasnip.jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
+      end
+    end, {'i', 's'}),
   }),
 })
 ```
@@ -245,7 +318,7 @@ local cmp = require('cmp')
 cmp.setup({
   window = {
     documentation = cmp.config.window.bordered(),
-  }
+  },
 })
 ```
 
@@ -267,20 +340,30 @@ cmp.setup({
 
 ## Completion item label
 
-In `v1.x` each completion item has a label that shows the source that created the item. This feature is now opt-in, you can use the function [lsp-zero.cmp_format()](../reference/lua-api#cmp-format-opts) to get the settings needed for nvim-cmp.
+In `v1.x` each completion item has a label that shows the source that created the item. This is how you can implement it.
 
 ```lua
 local cmp = require('cmp')
-local cmp_format = require('lsp-zero').cmp_format()
 
 cmp.setup({
-  formatting = cmp_format,
+  formatting = {
+    fields = {'abbr', 'menu', 'kind'},
+    format = function(entry, item)
+      local n = entry.source.name
+      if n == 'nvim_lsp' then
+        item.menu = '[LSP]'
+      else
+        item.menu = string.format('[%s]', n)
+      end
+      return item
+    end,
+  },
 })
 ```
 
 ## Example config
 
-The following config recreates most of the features that were removed from the `v1.x` branch.
+The following config recreates most of the features that were in the `v1.x` branch.
 
 ```lua
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
@@ -297,7 +380,6 @@ if not ok then
 end
 
 lazy.setup({
-  {'VonHeikemen/lsp-zero.nvim', branch = 'v4.x'},
   {'williamboman/mason.nvim'},
   {'williamboman/mason-lspconfig.nvim'},
   {'neovim/nvim-lspconfig'},
@@ -311,45 +393,21 @@ lazy.setup({
   {'rafamadriz/friendly-snippets'},
 })
 
-local lsp_zero = require('lsp-zero')
+-- Reserve a space in the gutter
+-- This will avoid an annoying layout shift in the screen
+vim.opt.signcolumn = 'yes'
 
-local lsp_attach = function(client, bufnr)
-  -- see :help lsp-zero-keybindings
-  -- to learn the available actions
-  lsp_zero.default_keymaps({buffer = bufnr})
-end
+-- Add borders to floating windows
+vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
+  vim.lsp.handlers.hover,
+  {border = 'rounded'}
+) 
+vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
+  vim.lsp.handlers.signature_help,
+  {border = 'rounded'}
+)
 
-lsp_zero.extend_lspconfig({
-  capabilities = require('cmp_nvim_lsp').default_capabilities(),
-  lsp_attach = lsp_attach,
-  float_border = 'rounded',
-  sign_text = {
-    error = '✘',
-    warn = '▲',
-    hint = '⚑',
-    info = ''
-  },
-})
-
-require('mason').setup({})
-require('mason-lspconfig').setup({
-  ensure_installed = {},
-  handlers = {
-    function(server_name)
-      require('lspconfig')[server_name].setup({})
-    end,
-    lua_ls = function()
-      require('lspconfig').lua_ls.setup({
-        on_init = function(client)
-          lsp_zero.nvim_lua_settings(client, {})
-        end,
-      })
-    end,
-  }
-})
-
-vim.keymap.set('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>')
-
+-- Configure error/warnings interface
 vim.diagnostic.config({
   virtual_text = false,
   severity_sort = true,
@@ -360,18 +418,83 @@ vim.diagnostic.config({
     header = '',
     prefix = '',
   },
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = '✘',
+      [vim.diagnostic.severity.WARN] = '▲',
+      [vim.diagnostic.severity.HINT] = '⚑',
+      [vim.diagnostic.severity.INFO] = '»',
+    },
+  },
+})
+
+-- Add cmp_nvim_lsp capabilities settings to lspconfig
+-- This should be executed before you configure any language server
+local lspconfig_defaults = require('lspconfig').util.default_config
+lspconfig_defaults.capabilities = vim.tbl_deep_extend(
+  'force',
+  lspconfig_defaults.capabilities,
+  require('cmp_nvim_lsp').default_capabilities()
+)
+
+-- This is where you enable features that only work
+-- if there is a language server active in the file
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(event)
+    local opts = {buffer = event.buf}
+
+    vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
+    vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
+    vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
+    vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
+    vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
+    vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
+    vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
+    vim.keymap.set('n', 'gl', '<cmd>lua vim.diagnostic.open_float()<cr>', opts)
+    vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
+    vim.keymap.set({'n', 'x'}, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
+    vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
+  end,
+})
+
+require('mason').setup({})
+require('mason-lspconfig').setup({
+  ensure_installed = {},
+  handlers = {
+    -- this first function is the "default handler"
+    -- it applies to every language server without a custom handler
+    function(server_name)
+      require('lspconfig')[server_name].setup({})
+    end,
+
+    -- this is the "custom handler" for `lua_ls`
+    lua_ls = function()
+      require('lspconfig').lua_ls.setup({
+        settings = {
+          Lua = {
+            runtime = {
+              version = 'LuaJIT'
+            },
+            diagnostics = {
+              globals = {'vim'},
+            },
+            workspace = {
+              library = {vim.env.VIMRUNTIME}
+            }
+          }
+        },
+      })
+    end,
+  },
 })
 
 local cmp = require('cmp')
-local cmp_action = lsp_zero.cmp_action()
-local cmp_format = lsp_zero.cmp_format()
 
 require('luasnip.loaders.from_vscode').lazy_load()
 
 vim.opt.completeopt = {'menu', 'menuone', 'noselect'}
 
 cmp.setup({
-  formatting = cmp_format,
   preselect = 'item',
   completion = {
     completeopt = 'menu,menuone,noinsert'
@@ -382,34 +505,81 @@ cmp.setup({
   sources = {
     {name = 'path'},
     {name = 'nvim_lsp'},
-    {name = 'nvim_lua'},
     {name = 'buffer', keyword_length = 3},
     {name = 'luasnip', keyword_length = 2},
   },
-  mapping = cmp.mapping.preset.insert({
-    -- confirm completion item
-    ['<CR>'] = cmp.mapping.confirm({select = false}),
-
-    -- toggle completion menu
-    ['<C-e>'] = cmp_action.toggle_completion(),
-
-    -- tab complete
-    ['<Tab>'] = cmp_action.tab_complete(),
-    ['<S-Tab>'] = cmp.mapping.select_prev_item(),
-
-    -- navigate between snippet placeholder
-    ['<C-d>'] = cmp_action.luasnip_jump_forward(),
-    ['<C-b>'] = cmp_action.luasnip_jump_backward(),
-
-    -- scroll documentation window
-    ['<C-f>'] = cmp.mapping.scroll_docs(5),
-    ['<C-u>'] = cmp.mapping.scroll_docs(-5),
-  }),
   snippet = {
     expand = function(args)
       require('luasnip').lsp_expand(args.body)
     end,
   },
+  formatting = {
+    fields = {'abbr', 'menu', 'kind'},
+    format = function(entry, item)
+      local n = entry.source.name
+      if n == 'nvim_lsp' then
+        item.menu = '[LSP]'
+      else
+        item.menu = string.format('[%s]', n)
+      end
+      return item
+    end,
+  },
+  mapping = cmp.mapping.preset.insert({
+    -- confirm completion item
+    ['<CR>'] = cmp.mapping.confirm({select = false}),
+
+    -- scroll documentation window
+    ['<C-f>'] = cmp.mapping.scroll_docs(-5),
+    ['<C-d>'] = cmp.mapping.scroll_docs(5),
+
+    -- toggle completion menu
+    ['<C-e>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.abort()
+      else
+        cmp.complete()
+      end
+    end),
+
+    -- tab complete
+    ['<Tab>'] = cmp.mapping(function(fallback)
+      local col = vim.fn.col('.') - 1
+
+      if cmp.visible() then
+        cmp.select_next_item({behavior = 'select'})
+      elseif col == 0 or vim.fn.getline('.'):sub(col, col):match('%s') then
+        fallback()
+      else
+        cmp.complete()
+      end
+    end, {'i', 's'}),
+
+    -- go to previous item
+    ['<S-Tab>'] = cmp.mapping.select_prev_item({behavior = 'select'}),
+
+    -- navigate to next snippet placeholder
+    ['<C-d>'] = cmp.mapping(function(fallback)
+      local luasnip = require('luasnip')
+
+      if luasnip.jumpable(1) then
+        luasnip.jump(1)
+      else
+        fallback()
+      end
+    end, {'i', 's'}),
+
+    -- navigate to the previous snippet placeholder
+    ['<C-b>'] = cmp.mapping(function(fallback)
+      local luasnip = require('luasnip')
+
+      if luasnip.jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
+      end
+    end, {'i', 's'}),
+  }),
 })
 ```
 
