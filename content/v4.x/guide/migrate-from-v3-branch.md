@@ -7,7 +7,7 @@ next: false
 
 I will assume you are using Neovim v0.10 or greater.
 
-Here you will find how to re-enable most of the features that were in the `v3.x` branch. If you just want to see a complete config example, go to [example config](#example-config).
+Here you will find how to re-enable most of the features that were in the `v3.x` branch. If you just want to see a complete config, go to [example config](#example-config).
 
 ## Configure nvim-lspconfig
 
@@ -22,7 +22,7 @@ vim.opt.signcolumn = 'yes'
 vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
   vim.lsp.handlers.hover,
   {border = 'rounded'}
-) 
+)
 vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
   vim.lsp.handlers.signature_help,
   {border = 'rounded'}
@@ -80,25 +80,13 @@ cmp.setup({
 ## Example Config
 
 ```lua
-local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
-vim.opt.rtp:prepend(lazypath)
-
-local ok, lazy = pcall(require, 'lazy')
-
-if not ok then
-  local msg = 'You need to install the plugin manager lazy.nvim\n'
-    .. 'in this folder: ' .. lazypath
-
-  print(msg)
-  return
-end
-
-lazy.setup({
-  {'neovim/nvim-lspconfig'},
-  {'hrsh7th/nvim-cmp'},
-  {'hrsh7th/cmp-nvim-lsp'},
-  {'L3MON4D3/LuaSnip'},
-})
+--[[
+  Make sure you have these plugins installed:
+  * neovim/nvim-lspconfig
+  * hrsh7th/nvim-cmp
+  * hrsh7th/cmp-nvim-lsp
+  * L3MON4D3/LuaSnip
+]]
 
 local cmp = require('cmp')
 
@@ -122,7 +110,7 @@ vim.opt.signcolumn = 'yes'
 vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
   vim.lsp.handlers.hover,
   {border = 'rounded'}
-) 
+)
 vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
   vim.lsp.handlers.signature_help,
   {border = 'rounded'}

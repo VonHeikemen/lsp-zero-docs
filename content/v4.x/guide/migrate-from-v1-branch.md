@@ -7,7 +7,7 @@ next: false
 
 I will assume you are using Neovim v0.10 or greater.
 
-Here you will find how to re-enable most of the features that were in the `v1.x` branch. If you want to see a complete config example, go to [example config](#example-config).
+Here you will find how to re-enable most of the features that were in the `v1.x` branch. If you just want to see a complete config, go to [example config](#example-config).
 
 ## Configure nvim-lspconfig
 
@@ -22,7 +22,7 @@ vim.opt.signcolumn = 'yes'
 vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
   vim.lsp.handlers.hover,
   {border = 'rounded'}
-) 
+)
 vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
   vim.lsp.handlers.signature_help,
   {border = 'rounded'}
@@ -35,7 +35,6 @@ vim.diagnostic.config({
   float = {
     style = 'minimal',
     border = 'rounded',
-    source = 'always',
     header = '',
     prefix = '',
   },
@@ -88,15 +87,15 @@ require('lspconfig').lua_ls.setup({
   settings = {
     Lua = {
       runtime = {
-        version = 'LuaJIT'
+        version = 'LuaJIT',
       },
       diagnostics = {
         globals = {'vim'},
       },
       workspace = {
-        library = {vim.env.VIMRUNTIME}
-      }
-    }
+        library = {vim.env.VIMRUNTIME},
+      },
+    },
   },
 })
 ```
@@ -145,14 +144,14 @@ require('mason-lspconfig').setup({
         settings = {
           Lua = {
             runtime = {
-              version = 'LuaJIT'
+              version = 'LuaJIT',
             },
             diagnostics = {
               globals = {'vim'},
             },
             workspace = {
-              library = {vim.env.VIMRUNTIME}
-            }
+              library = {vim.env.VIMRUNTIME},
+            },
           },
         },
       })
@@ -212,7 +211,7 @@ If you want to use the previous recommended config install these plugins in your
 * [hrsh7th/cmp-path](https://github.com/hrsh7th/cmp-path)
 * [saadparwaiz1/cmp_luasnip](https://github.com/saadparwaiz1/cmp_luasnip)
 * [rafamadriz/friendly-snippets](https://github.com/rafamadriz/friendly-snippets)
-* [L3MON4D3/LuaSnip](https://github.com/L3MON4D3/LuaSnip) 
+* [L3MON4D3/LuaSnip](https://github.com/L3MON4D3/LuaSnip)
 
 ```lua
 local cmp = require('cmp')
@@ -255,8 +254,8 @@ cmp.setup({
     ['<CR>'] = cmp.mapping.confirm({select = false}),
 
     -- scroll documentation window
-    ['<C-f>'] = cmp.mapping.scroll_docs(-5),
-    ['<C-d>'] = cmp.mapping.scroll_docs(5),
+    ['<C-f>'] = cmp.mapping.scroll_docs(5),
+    ['<C-u>'] = cmp.mapping.scroll_docs(-5),
 
     -- toggle completion menu
     ['<C-e>'] = cmp.mapping(function(fallback)
@@ -366,32 +365,19 @@ cmp.setup({
 The following config recreates most of the features that were in the `v1.x` branch.
 
 ```lua
-local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
-vim.opt.rtp:prepend(lazypath)
-
-local ok, lazy = pcall(require, 'lazy')
-
-if not ok then
-  local msg = 'You need to install the plugin manager lazy.nvim\n'
-    .. 'in this folder: ' .. lazypath
-
-  print(msg)
-  return
-end
-
-lazy.setup({
-  {'williamboman/mason.nvim'},
-  {'williamboman/mason-lspconfig.nvim'},
-  {'neovim/nvim-lspconfig'},
-  {'hrsh7th/nvim-cmp'},
-  {'hrsh7th/cmp-nvim-lsp'},
-  {'hrsh7th/cmp-buffer'},
-  {'hrsh7th/cmp-path'},
-  {'saadparwaiz1/cmp_luasnip'},
-  {'hrsh7th/cmp-nvim-lua'},
-  {'L3MON4D3/LuaSnip'},
-  {'rafamadriz/friendly-snippets'},
-})
+--[[
+  Make sure you have these plugins installed:
+  * williamboman/mason.nvim
+  * williamboman/mason-lspconfig.nvim
+  * neovim/nvim-lspconfig
+  * hrsh7th/nvim-cmp
+  * hrsh7th/cmp-nvim-lsp
+  * hrsh7th/cmp-buffer
+  * hrsh7th/cmp-path
+  * saadparwaiz1/cmp_luasnip
+  * L3MON4D3/LuaSnip
+  * rafamadriz/friendly-snippets
+]]
 
 -- Reserve a space in the gutter
 -- This will avoid an annoying layout shift in the screen
@@ -401,7 +387,7 @@ vim.opt.signcolumn = 'yes'
 vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
   vim.lsp.handlers.hover,
   {border = 'rounded'}
-) 
+)
 vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
   vim.lsp.handlers.signature_help,
   {border = 'rounded'}
@@ -414,7 +400,6 @@ vim.diagnostic.config({
   float = {
     style = 'minimal',
     border = 'rounded',
-    source = 'always',
     header = '',
     prefix = '',
   },
@@ -473,15 +458,15 @@ require('mason-lspconfig').setup({
         settings = {
           Lua = {
             runtime = {
-              version = 'LuaJIT'
+              version = 'LuaJIT',
             },
             diagnostics = {
               globals = {'vim'},
             },
             workspace = {
-              library = {vim.env.VIMRUNTIME}
-            }
-          }
+              library = {vim.env.VIMRUNTIME},
+            },
+          },
         },
       })
     end,
@@ -530,8 +515,8 @@ cmp.setup({
     ['<CR>'] = cmp.mapping.confirm({select = false}),
 
     -- scroll documentation window
-    ['<C-f>'] = cmp.mapping.scroll_docs(-5),
-    ['<C-d>'] = cmp.mapping.scroll_docs(5),
+    ['<C-f>'] = cmp.mapping.scroll_docs(5),
+    ['<C-u>'] = cmp.mapping.scroll_docs(-5),
 
     -- toggle completion menu
     ['<C-e>'] = cmp.mapping(function(fallback)
