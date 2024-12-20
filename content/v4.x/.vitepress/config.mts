@@ -82,9 +82,9 @@ function sidebar() {
       items: [
         { text: 'Lazy loading with lazy.nvim', link: '/guide/lazy-loading-with-lazy-nvim' },
         { text: 'lua_ls for Neovim', link: '/guide/neovim-lua-ls' },
-        { text: 'Migrate from v3.x to v4.x', link: '/guide/migrate-from-v3-branch' },
-        { text: 'Migrate from v2.x to v4.x', link: '/guide/migrate-from-v2-branch' },
-        { text: 'Migrate from v1.x to v4.x', link: '/guide/migrate-from-v1-branch' },
+        { text: 'Migrate from v3.x', link: '/guide/migrate-from-v3-branch' },
+        { text: 'Migrate from v2.x', link: '/guide/migrate-from-v2-branch' },
+        { text: 'Migrate from v1.x', link: '/guide/migrate-from-v1-branch' },
       ]
     },
     {
