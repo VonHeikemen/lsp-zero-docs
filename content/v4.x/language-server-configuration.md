@@ -284,8 +284,6 @@ Where `[tool]` can be prettier or black or stylua or any command line tool that 
 
 Short answer: You need some sort of adapter. Another plugin or a language server that can communicate with `[tool]`.
 
-Long answer: Your question should be more specific to Neovim and not lsp-zero. You should be looking for "how to make [vim.lsp.buf.format()](https://neovim.io/doc/user/lsp.html#vim.lsp.buf.format()) use `[tool]`?" And once you know how to do that you can use one of lsp-zero helper functions... or just `vim.lsp.buf.format()`.
-
 If you really want to integrate that command line tool with Neovim's LSP client, these are your options:
 
 * [efm-langserver](https://github.com/mattn/efm-langserver)

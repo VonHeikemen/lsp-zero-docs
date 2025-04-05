@@ -6,25 +6,25 @@ outline: [2,3]
 
 # LSP client features
 
-Here I want to list the features Neovim enables by default and also show what you can do with the LSP client.
+> Last updated: 2025-03-27
 
-**IMPORTANT**: This post is based on the documentation of Neovim `v0.11`, which is still under development. The API used here can change at any point in time.
+Here I want to list the features Neovim enables by default and also show what you can do with the LSP client.
 
 ## Default keymaps
 
 These keymaps are part of Neovim's defaults. Some of them will be available even if you don't have a language server. But they will use the language server whenever possible.
 
-* `<C-]>` (control + ]) jump to definition.
+* `<Ctrl-]>` jump to definition.
 
 * `gq` format lines of code. This is an operator, is not "gq formats the whole file."
 
 * `gO` lists all symbols in the current buffer.
 
-* `<C-x><C-o>` (control + x then control + o) will trigger code completion menu.
+* `<Ctrl-x><Ctrl-o>` will trigger code completion menu.
 
 * `K` display the available documentation for the symbol under the cursor.
 
-* `<C-w>d` (control + w then d) opens a floating window showing the error/warning message in the line under the cursor.
+* `<Ctrl-w>d` opens a floating window showing the error/warning message in the line under the cursor.
 
 * `[d` and `]d` can be used to move the cursor to the previous and next errors/warnings of the current file.
 

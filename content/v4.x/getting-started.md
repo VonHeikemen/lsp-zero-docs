@@ -14,9 +14,9 @@ Before doing anything, make sure you...
 
   * Have Neovim v0.10 installed
     * Neovim v0.9 also works
-  * Know how to install Neovim plugins
-  * Know where to add the configuration code for lua plugins
-  * Know what is LSP, and what is a language server
+  * Know what is a language server
+    * Neovim's LSP client only works with language servers
+    * [prettier](https://prettier.io/) is not a language server
 
 ## Installing
 

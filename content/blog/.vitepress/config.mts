@@ -42,9 +42,9 @@ function sidebar() {
         { text: 'Configure volar 2.0', link: '/configure-volar-v2' },
         { text: 'Setup with nvim-jdtls', link: '/setup-with-nvim-jdtls' },
         { text: 'Configure efm', link: '/configure-efm' },
-        { text: 'LSP in 3 steps', link: '/lsp-in-3-steps' },
+        { text: 'LSP config overview', link: '/lsp-config-overview' },
         { text: 'LSP client features', link: '/lsp-client-features' },
-        { text: 'LSP without plugins', link: '/lsp-without-plugins' },
+        { text: 'LSP config without plugins', link: '/lsp-config-without-plugins' },
       ]
     }
   ];

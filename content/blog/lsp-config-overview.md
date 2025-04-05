@@ -3,11 +3,11 @@ prev: false
 next: false
 ---
 
-# LSP in 3 steps
+# LSP config
+
+> Last updated: 2025-03-27
 
 Here I want to give you a quick overview of how you can use an "LSP server" in Neovim `v0.11`.
-
-**IMPORTANT**: Neovim `v0.11` is still under development. The API used here can change at any point in time.
 
 ## Step 1: Install a server
 
@@ -15,12 +15,12 @@ I will use [luals](https://github.com/LuaLS/lua-language-server) as an example. 
 
 ## Step 2: Define a configuration
 
-In Neovim's config folder you can create another folder called `lsp`. There you can add the configuration for the language servers you have installed.
+In Neovim's config folder you can create another folder called `lsp`. There you can add a configuration file for each language server you have installed.
 
 ```lua
 -- ~/.config/nvim/lsp/luals.lua
 
-vim.lsp.config.luals = {
+return {
   cmd = {'lua-language-server'},
   filetypes = {'lua'},
   root_markers = {'.luarc.json', '.luarc.jsonc'},
@@ -39,7 +39,7 @@ vim.lsp.enable('luals')
 
 ::: details Expand: Neovim and luals
 
-The language server for lua does not have "support" Neovim's lua API out the box. You won't get code completion for Neovim's builtin functions and you may see some annoying warnings.
+The language server for lua does not have support Neovim's lua API out the box. You won't get code completion for Neovim's builtin functions and you may see some annoying warnings.
 
 To get some basic support for Neovim, create a file called .luarc.json in your Neovim config folder (next to your init.lua file). Then add this content.
 
@@ -89,7 +89,7 @@ Is worth mention not every language server implements all these features. The fa
 
 If you want to learn more about `vim.lsp.config` and `vim.lsp.enable` read this post:
 
-* [LSP without plugins](./lsp-without-plugins)
+* [LSP config without plugins](./lsp-config-without-plugins)
 
 If want to know what other things you can implement with Neovim's LSP client read this:
 

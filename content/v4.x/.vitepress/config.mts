@@ -47,14 +47,6 @@ function sidebar() {
       ]
     },
     {
-      text: 'API Reference',
-      items: [
-        { text: 'Commands', link: '/reference/commands' },
-        { text: 'Variables', link: '/reference/variables' },
-        { text: 'Lua API', link: '/reference/lua-api' },
-      ]
-    },
-    {
       text: 'Templates',
       collapsed: true,
       items: [
@@ -95,6 +87,10 @@ function sidebar() {
         { text: 'ThePrimeagen 0 to LSP', link: 'https://lsp-zero.netlify.app/blog/theprimeagens-config-from-2022.html' },
         { text: 'Configure volar 2.0', link: 'https://lsp-zero.netlify.app/blog/configure-volar-v2.html' },
         { text: 'Setup with nvim-jdtls', link: 'https://lsp-zero.netlify.app/blog/setup-with-nvim-jdtls' },
+        { text: 'Configure efm', link: 'https://lsp-zero.netlify.app/blog/configure-efm' },
+        { text: 'LSP config overview', link: 'https://lsp-zero.netlify.app/blog/lsp-config-overview' },
+        { text: 'LSP client features', link: 'https://lsp-zero.netlify.app/blog/lsp-client-features' },
+        { text: 'LSP config without plugins', link: 'https://lsp-zero.netlify.app/blog/lsp-config-without-plugins' },
       ]
     }
   ];
