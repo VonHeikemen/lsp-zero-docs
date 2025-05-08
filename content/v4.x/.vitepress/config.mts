@@ -60,9 +60,7 @@ function sidebar() {
       collapsed: true,
       items: [
         { text: 'Integrate with mason.nvim', link: '/guide/integrate-with-mason-nvim' },
-        { text: 'Enable folds with nvim-ufo', link: '/guide/quick-recipes#enable-folds-with-nvim-ufo' },
         { text: 'Setup copilot.lua + nvim-cmp', link: '/guide/setup-copilot-lua-plus-nvim-cmp' },
-        { text: 'Setup with rustaceanvim', link: '/guide/quick-recipes#setup-with-rustaceanvim' },
         { text: 'Setup with flutter-tools', link: '/guide/quick-recipes#setup-with-flutter-tools' },
         { text: 'Setup with nvim-metals', link: '/guide/quick-recipes#setup-with-nvim-metals' },
         { text: 'Setup with haskell-tools', link: '/guide/quick-recipes#setup-with-haskell-tools' },

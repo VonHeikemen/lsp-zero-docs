@@ -60,7 +60,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 ## Automatic install of language servers
 
-In order to get automatic install of language server you will have to use the module `mason-lspconfig` and list the servers in the `ensure_installed` option. Like this.
+In order to get automatic install of language server you will have to use the module `mason-lspconfig (v1.32.0)` and list the servers in the `ensure_installed` option. Like this.
 
 ```lua
 require('mason').setup({})
@@ -71,9 +71,9 @@ require('mason-lspconfig').setup({
 
 ## Automatic configuration of language servers
 
-To configure the language servers installed with `mason.nvim` automatically you should use the module `mason-lspconfig`.
+To configure the language servers installed with `mason.nvim (v1.11.0)` automatically you should use the module `mason-lspconfig (v1.32.0)`.
 
-You'll need to use the option `handlers` in mason-lspconfig. You can make a "default handler" that will setup the language servers using `lspconfig`.
+You'll need to use the option `handlers` in mason-lspconfig. You can make a "default handler" that will setup the language servers using `nvim-lspconfig (v1.8.0)`.
 
 ```lua
 require('mason').setup({})
@@ -117,7 +117,7 @@ require('mason-lspconfig').setup({
 
 ## Setup lua_ls using mason-lspconfig
 
-When using mason-lspconfig, if you want to configure a language server you need to add a handler with the name of the language server. In this handler you will assign a lua function, and inside this function you will configure the server.
+When using `mason-lspconfig (v1.32.0)`, if you want to configure a language server you need to add a handler with the name of the language server. In this handler you will assign a lua function, and inside this function you will configure the server.
 
 ```lua
 require('mason').setup({})
@@ -211,9 +211,9 @@ cmp.setup({
 ```lua
 --[[
   Make sure you have these plugins installed:
-  * neovim/nvim-lspconfig
-  * williamboman/mason.nvim
-  * williamboman/mason-lspconfig.nvim
+  * neovim/nvim-lspconfig (v1.8.0)
+  * mason-org/mason.nvim (v1.11.0)
+  * mason-org/mason-lspconfig.nvim (v1.32.0)
   * hrsh7th/nvim-cmp
   * hrsh7th/cmp-nvim-lsp
   * L3MON4D3/LuaSnip

@@ -3,9 +3,15 @@ prev: false
 next: false
 ---
 
-# Integrate with mason.nvim
+# Integrate with mason.nvim (version 1)
 
 We can use [mason.nvim](https://github.com/williamboman/mason.nvim) and [mason-lspconfig.nvim](https://github.com/williamboman/mason-lspconfig.nvim) to help us manage the installation of language servers. And then we can use [lspconfig](https://github.com/neovim/nvim-lspconfig) to setup the servers only when they are installed.
+
+::: info Note:
+
+`mason.nvim` version 2 requires Neovim v0.10 or greater. And, `mason-lspconfig.nvim` version 2 requires Neovim v0.11.
+
+:::
 
 Here is a basic example.
 

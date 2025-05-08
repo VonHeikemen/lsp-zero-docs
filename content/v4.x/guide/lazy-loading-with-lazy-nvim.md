@@ -41,6 +41,8 @@ Lots of you really like this lazy loading business. Let me show you how to defer
     'neovim/nvim-lspconfig',
     cmd = 'LspInfo',
     event = {'BufReadPre', 'BufNewFile'},
+    tag = 'v1.8.0',
+    pin = true,
     dependencies = {
       {'hrsh7th/cmp-nvim-lsp'},
     },
@@ -97,9 +99,18 @@ Lots of you really like this lazy loading business. Let me show you how to defer
 ```lua
 {
   {
-    'williamboman/mason.nvim',
+    'mason-org/mason.nvim',
+    tag = 'v1.11.0',
+    pin = true,
     lazy = false,
     opts = {},
+  },
+  {
+    'mason-org/mason-lspconfig.nvim'
+    tag = 'v1.32.0',
+    pin = true,
+    lazy = true,
+    config = false,
   },
 
   -- Autocompletion
@@ -130,12 +141,14 @@ Lots of you really like this lazy loading business. Let me show you how to defer
   -- LSP
   {
     'neovim/nvim-lspconfig',
+    tag = 'v1.8.0',
+    pin = true,
     cmd = {'LspInfo', 'LspInstall', 'LspStart'},
     event = {'BufReadPre', 'BufNewFile'},
     dependencies = {
       {'hrsh7th/cmp-nvim-lsp'},
-      {'williamboman/mason.nvim'},
-      {'williamboman/mason-lspconfig.nvim'},
+      {'mason-org/mason.nvim'},
+      {'mason-org/mason-lspconfig.nvim'},
     },
     init = function()
       -- Reserve a space in the gutter

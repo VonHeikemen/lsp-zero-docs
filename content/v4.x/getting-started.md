@@ -6,7 +6,13 @@ next:
 
 # Getting started
 
-In this section you will learn how to add a very basic "LSP setup" to your existing Neovim config. If you want to learn how to setup everything from scratch, go to the [tutorial for beginners](./tutorial).
+In this section you will learn how to add a very basic LSP setup to your existing Neovim config. If you want to learn how to setup everything from scratch, go to the [tutorial for beginners](./tutorial).
+
+::: info Note:
+
+Since Neovim v0.11 there is a "new API" to interact with language servers. But here I'll only show the "legacy API" that works in Neovim v0.10 and v0.9.
+
+:::
 
 ## Requirements
 
@@ -22,145 +28,9 @@ Before doing anything, make sure you...
 
 Use your favorite method to install these plugins.
 
-  * [neovim/nvim-lspconfig](https://github.com/neovim/nvim-lspconfig)
+  * [neovim/nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) `(v1.8.0)`
   * [hrsh7th/nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
   * [hrsh7th/cmp-nvim-lsp](https://github.com/hrsh7th/cmp-nvim-lsp)
-
-::: details Expand: lazy.nvim
-
-```lua
-{'neovim/nvim-lspconfig'},
-{'hrsh7th/cmp-nvim-lsp'},
-{'hrsh7th/nvim-cmp'},
-```
-
-For a more advance config that lazy loads everything take a look at the example on this link: [Lazy loading with lazy.nvim](./guide/lazy-loading-with-lazy-nvim).
-
-:::
-
-::: details Expand: paq.nvim
-
-```lua
-{'neovim/nvim-lspconfig'},
-{'hrsh7th/cmp-nvim-lsp'},
-{'hrsh7th/nvim-cmp'},
-```
-
-:::
-
-::: details Expand: pckr.nvim
-
-[lewis6991/pckr.nvim](https://github.com/lewis6991/pckr.nvim) is the spiritual successor of `packer.nvim`.
-
-```lua
-{'neovim/nvim-lspconfig'};
-{'hrsh7th/cmp-nvim-lsp'};
-{'hrsh7th/nvim-cmp'};
-```
-
-:::
-
-::: details Expand: packer.nvim
-
-Note [wbthomason/packer.nvim](https://github.com/wbthomason/packer.nvim) has been officially unmantained since August 2023.
-
-```lua
-use({'neovim/nvim-lspconfig'})
-use({'hrsh7th/nvim-cmp'})
-use({'hrsh7th/cmp-nvim-lsp'})
-```
-
-:::
-
-::: details Expand: mini.deps
-
-```lua
-MiniDeps.add({source = 'neovim/nvim-lspconfig'})
-MiniDeps.add({
-  source = 'hrsh7th/nvim-cmp',
-  depends = {
-    'hrsh7th/cmp-nvim-lsp',
-  },
-})
-```
-
-:::
-
-::: details Expand: vim-plug
-
-```vim
-Plug 'neovim/nvim-lspconfig'
-Plug 'hrsh7th/nvim-cmp'
-Plug 'hrsh7th/cmp-nvim-lsp'
-```
-
-When using vimscript you can wrap lua code in `lua <<EOF ... EOF`.
-
-```lua
-lua <<EOF
-print('this an example code')
-print('written in lua')
-EOF
-```
-:::
-
-::: details Expand: rocks.nvim
-
-Install nvim-lspconfig.
-
-```
-Rocks install nvim-lspconfig
-```
-
-Install nvim-cmp.
-
-```
-Rocks install nvim-cmp
-```
-
-Install the LSP completion source.
-
-```
-Rocks install cmp-nvim-lsp
-```
-
-:::
-
-::: details Expand: Git clone
-
-To install a plugin without a plugin manager you just have to download them in the right location.
-
-* Create the folder where plugins should be downloaded
-
-  The exact path depends on your operating system and environment variables. To get a valid location you can execute this command in your terminal.
-
-  ```sh
-  nvim --headless -c "echo stdpath('config') . '/pack/vendor/start/'" -c "echo ''" -c "quit"
-  ```
-
-  Create that folder and navigate to it. Use whatever method you know best.
-
-  Use the command `git clone` inside that folder.
-
-* Install nvim-lspconfig
-
-  ```sh
-  git clone https://github.com/neovim/nvim-lspconfig.git
-  ```
-
-* Install nvim-cmp
-
-  ```sh
-  git clone https://github.com/hrsh7th/nvim-cmp.git
-  ```
-
-* Install cmp-nvim-lsp
-
-  ```sh
-  git clone https://github.com/hrsh7th/cmp-nvim-lsp.git
-  ```
-
-:::
 
 ## Extend nvim-lspconfig
 

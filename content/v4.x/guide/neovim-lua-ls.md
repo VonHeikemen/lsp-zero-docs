@@ -78,7 +78,7 @@ require('lspconfig').lua_ls.setup({
 })
 ```
 
-If you used `mason-lspconfig.nvim` to setup your language servers, add `lua_ls` to your handlers config.
+If you used `mason-lspconfig.nvim (v1.32.0)` to setup your language servers, add `lua_ls` to your handlers config.
 
 ```lua
 require('mason').setup({})

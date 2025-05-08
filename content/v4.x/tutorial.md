@@ -10,6 +10,12 @@ If you already have a Neovim configuration with a plugin manager, go to the [get
 * Neovim v0.10 or greater
 * git
 
+::: info Note:
+
+Since Neovim v0.11 there is a "new API" to interact with language servers. But here I'll only show the "legacy API" that works in Neovim v0.10 and v0.9.
+
+:::
+
 ## The Entry Point
 
 To start we will create the file known as `init.lua`. The location of this file depends on your operating system. If you want to know where that is execute this command on your terminal.
@@ -141,7 +147,7 @@ Now we need to add all the lua plugins in lazy's setup function.
 ```lua{3-5}
 require('lazy').setup({
   {'folke/tokyonight.nvim'},
-  {'neovim/nvim-lspconfig'},
+  {'neovim/nvim-lspconfig', tag = 'v1.8.0', pin = true},
   {'hrsh7th/cmp-nvim-lsp'},
   {'hrsh7th/nvim-cmp'},
 })
@@ -281,15 +287,15 @@ Anyway, if you choose this method you will need to add these two plugins:
 ```lua{3-4}
 require('lazy').setup({
   {'folke/tokyonight.nvim'},
-  {'williamboman/mason.nvim'},
-  {'williamboman/mason-lspconfig.nvim'},
-  {'neovim/nvim-lspconfig'},
+  {'mason-org/mason.nvim', tag = 'v1.11.0', pin = true},
+  {'mason-org/mason-lspconfig.nvim', tag = 'v1.32.0', pin = true},
+  {'neovim/nvim-lspconfig', tag = 'v1.8.0', pin = true},
   {'hrsh7th/cmp-nvim-lsp'},
   {'hrsh7th/nvim-cmp'},
 })
 ```
 
-`mason.nvim` will make sure we have access to the language servers. And we will use `mason-lspconfig` to configure the automatic setup of every language server we install.
+`mason.nvim (v1.11.0)` will make sure we have access to the language servers. And we will use `mason-lspconfig (v1.32.0)` to configure the automatic setup of every language server we install.
 
 ```lua{19-26}
 vim.opt.signcolumn = 'yes'
@@ -434,7 +440,7 @@ vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
   {'folke/tokyonight.nvim'},
-  {'neovim/nvim-lspconfig'},
+  {'neovim/nvim-lspconfig', tag = 'v1.8.0', pin = true},
   {'hrsh7th/cmp-nvim-lsp'},
   {'hrsh7th/nvim-cmp'},
 })
@@ -538,9 +544,9 @@ vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
   {'folke/tokyonight.nvim'},
-  {'williamboman/mason.nvim'},
-  {'williamboman/mason-lspconfig.nvim'},
-  {'neovim/nvim-lspconfig'},
+  {'mason-org/mason.nvim', tag = 'v1.11.0', pin = true},
+  {'mason-org/mason-lspconfig.nvim', tag = 'v1.32.0', pin = true},
+  {'neovim/nvim-lspconfig', tag = 'v1.8.0', pin = true},
   {'hrsh7th/cmp-nvim-lsp'},
   {'hrsh7th/nvim-cmp'},
 })

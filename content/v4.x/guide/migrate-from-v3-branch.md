@@ -82,7 +82,7 @@ cmp.setup({
 ```lua
 --[[
   Make sure you have these plugins installed:
-  * neovim/nvim-lspconfig
+  * neovim/nvim-lspconfig (v1.8.0)
   * hrsh7th/nvim-cmp
   * hrsh7th/cmp-nvim-lsp
   * L3MON4D3/LuaSnip

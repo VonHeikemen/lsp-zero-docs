@@ -32,15 +32,15 @@ You can find install instructions for each language server in lspconfig's docume
 
 ### Via command
 
-If you have [mason.nvim](https://github.com/williamboman/mason.nvim) and [mason-lspconfig](https://github.com/williamboman/mason-lspconfig.nvim) installed you can use the command `:LspInstall` to install a language server. If you call this command while you are in a file it'll suggest a list of language server based on the type of that file.
+If you have [mason.nvim](https://github.com/mason-org/mason.nvim) and [mason-lspconfig](https://github.com/mason-org/mason-lspconfig.nvim) installed you can use the command `:LspInstall` to install a language server. If you call this command while you are in a file it'll suggest a list of language server based on the type of that file.
 
 ### Automatic installs
 
-If you have [mason.nvim](https://github.com/williamboman/mason.nvim) and [mason-lspconfig](https://github.com/williamboman/mason-lspconfig.nvim), you can instruct `mason-lspconfig` to install the language servers you want using the option `ensure_installed`.
+If you have [mason.nvim](https://github.com/mason-org/mason.nvim) `v1.11.0` and [mason-lspconfig](https://github.com/mason-org/mason-lspconfig.nvim) `v1.32.0`, you can instruct `mason-lspconfig` to install the language servers you want using the option `ensure_installed`.
 
 ::: info Note:
 
-The name of the language server you want to install must be [on this list](https://github.com/williamboman/mason-lspconfig.nvim#available-lsp-servers).
+The name of the language server you want to install must be [on this list](https://github.com/mason-org/mason-lspconfig.nvim#available-lsp-servers).
 
 :::
 
@@ -73,7 +73,7 @@ require('lspconfig').biome.setup({
 })
 ```
 
-If you use `mason-lspconfig` handlers to manage the setup of your language servers then you will need to add a custom handler. Here is an example.
+If you use `mason-lspconfig (v1.32.0)` handlers to manage the setup of your language servers then you will need to add a custom handler. Here is an example.
 
 ```lua{10-17}
 require('mason-lspconfig').setup({
@@ -144,6 +144,12 @@ require('lspconfig').lua_ls.setup({
 ```
 
 ## Custom servers
+
+::: info Note:
+
+These instructions use the "legacy api" of nvim-lspconfig.
+
+:::
 
 You can add the configuration to the module `lspconfig.configs` then you can call the `.setup()` function.
 

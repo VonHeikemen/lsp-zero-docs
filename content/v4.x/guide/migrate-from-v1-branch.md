@@ -102,7 +102,7 @@ require('lspconfig').lua_ls.setup({
 
 ## Automatic install of language servers
 
-This can be done using the module `mason-lspconfig`. Use the `ensure_installed` property of their `.setup()` function. There you can list all the language servers you want to install.
+This can be done using the module `mason-lspconfig (v1.32.0)`. Use the `ensure_installed` property of their `.setup()` function. There you can list all the language servers you want to install.
 
 ```lua
 require('mason-lspconfig').setup({
@@ -112,7 +112,7 @@ require('mason-lspconfig').setup({
 
 ## Enable automatic setup of language servers
 
-This can be done using the module `mason-lspconfig`. In their `.setup()` function you will need to configure a property called `handlers`. You can setup a "default handler" and this will be enough to get the behaviour you want.
+This can be done using the module `mason-lspconfig (v1.32.0)`. In their `.setup()` function you will need to configure a property called `handlers`. You can setup a "default handler" and this will be enough to get the behaviour you want.
 
 ```lua
 require('mason').setup({})
@@ -367,9 +367,9 @@ The following config recreates most of the features that were in the `v1.x` bran
 ```lua
 --[[
   Make sure you have these plugins installed:
-  * williamboman/mason.nvim
-  * williamboman/mason-lspconfig.nvim
-  * neovim/nvim-lspconfig
+  * neovim/nvim-lspconfig (v1.8.0)
+  * mason-org/mason.nvim (v1.11.0)
+  * mason-org/mason-lspconfig.nvim (v1.32.0)
   * hrsh7th/nvim-cmp
   * hrsh7th/cmp-nvim-lsp
   * hrsh7th/cmp-buffer

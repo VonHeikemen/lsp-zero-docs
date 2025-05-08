@@ -13,9 +13,9 @@ Make sure you download [vim-plug](https://github.com/junegunn/vim-plug) (the plu
 set signcolumn=yes
 
 call plug#begin()
-  Plug 'neovim/nvim-lspconfig'
-  Plug 'williamboman/mason.nvim'
-  Plug 'williamboman/mason-lspconfig.nvim'
+  Plug 'neovim/nvim-lspconfig', {'tag': 'v1.8.0', 'frozen': 1} 
+  Plug 'mason-org/mason.nvim', {'tag': 'v1.11.0', 'frozen': 1}
+  Plug 'mason-org/mason-lspconfig.nvim', {'tag': 'v1.32.0', 'frozen': 1}
   Plug 'hrsh7th/nvim-cmp'
   Plug 'hrsh7th/cmp-nvim-lsp'
 call plug#end()
